@@ -1,13 +1,15 @@
 cmake_minimum_required(VERSION 2.6)
-project(dc_tp_template)
+project(metnum-tp1)
 
-set(SOURCE_FILES src/my_src.cpp)
+set(SOURCE_FILES )
+
+set(PPMLOADER_FILES src/ppmloader/ppmloader.cpp)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -pedantic")
 
-add_library(dc-tp-base ${SOURCE_FILES})
+add_library(metnum-tp1-base ${PPMLOADER_FILES} ${SOURCE_FILES})
 
 add_executable(main src/main.cpp)
-target_link_libraries (main dc-tp-base)
+target_link_libraries (main metnum-tp1-base)
 
 add_subdirectory(test)
