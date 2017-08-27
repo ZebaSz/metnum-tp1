@@ -40,4 +40,9 @@ TEST(MatrixTest, dotProduct) {
 
     ASSERT_EQ(result, expected);
 
+    ASSERT_EQ(dotProduct(a, identityMatrix(3)), a);
+    ASSERT_EQ(dotProduct(b, identityMatrix(3)), b);
+    ASSERT_EQ(dotProduct(identityMatrix(3), a), a);
+    ASSERT_EQ(dotProduct(identityMatrix(3), b), b);
+
 }
