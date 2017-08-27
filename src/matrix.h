@@ -2,6 +2,7 @@
 #define METNUM_TP1_MATRIX_H
 
 #include <vector>
+#include <assert.h>
 #include "matrix.h"
 
 template <typename T>
@@ -23,4 +24,21 @@ matrix<T> toMatrix(T** arr, int height, int width) {
     return mx;
 }
 
+template <typename T>
+matrix<T> dotProduct(const matrix<T> &a, const matrix<T> &b) {
+    assert(a.empty() || b.empty() || a[0].empty() || b[0].empty() || a[0].size() != b.size());
+
+    int rows = a.size(), columns = b[0].size();
+    matrix<T> result(rows, row<T>(columns, 0));
+
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < columns; ++j) {
+            for (int k = 0; k < b.size(); ++k) {
+                result[i][j] += a[i][k] * b[k][j];
+            }
+        }
+    }
+
+    return result;
+}
 #endif //METNUM_TP1_MATRIX_H
