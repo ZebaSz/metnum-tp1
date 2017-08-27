@@ -20,3 +20,24 @@ TEST(MatrixTest, square_array) {
         }
     }
 }
+
+TEST(MatrixTest, dotProduct) {
+    matrix<int> a = {
+            {2, 0, 1},
+            {3, 0, 0},
+            {5, 1, 1}};
+
+    matrix<int> b = {
+            {1, 0, 1},
+            {1, 2, 1},
+            {1, 1, 0}};
+
+    matrix<int> expected = {{3, 1, 2},
+                            {3, 0, 3},
+                            {7, 3, 6}};
+
+    matrix<int> result = dotProduct(a, b);
+
+    ASSERT_EQ(result, expected);
+
+}
