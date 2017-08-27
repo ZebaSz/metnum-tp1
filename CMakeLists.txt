@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 project(metnum-tp1)
 
-set(SOURCE_FILES src/matrix.h)
+set(SOURCE_FILES src/matrix.h src/gauss.h)
 
 set(PPMLOADER_FILES src/ppmloader/ppmloader.cpp)
 
