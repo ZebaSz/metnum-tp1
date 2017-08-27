@@ -35,7 +35,7 @@ if(Boost_FOUND)
         include_directories("${gtest_SOURCE_DIR}/include")
     endif()
 
-    set(TEST_FILES MatrixTest.cpp MatrixTest.cpp)
+    set(TEST_FILES MatrixTest.cpp GaussTest.cpp)
     add_executable(correrTests ${TEST_FILES})
     target_link_libraries(correrTests metnum-tp1-base gtest_main gtest)
 endif()

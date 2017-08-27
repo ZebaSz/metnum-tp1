@@ -12,11 +12,15 @@ TEST(MatrixTest, square_array) {
         }
     }
     matrix<int> mx = toMatrix(arr, size, size);
-    ASSERT_EQ(mx.size(), size);
+    ASSERT_EQ(mx.size(), (size_t)size);
     for (size_t i = 0; i < mx.size(); ++i) {
-        ASSERT_EQ(mx[i].size(), size);
+        ASSERT_EQ(mx[i].size(), (size_t)size);
         for (size_t j = 0; j < mx[i].size(); ++j) {
             ASSERT_EQ(mx[i][j], value);
         }
     }
+    for (int i = 0; i < size; ++i) {
+        delete[] arr[i];
+    }
+    delete[] arr;
 }
