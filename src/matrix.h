@@ -4,6 +4,7 @@
 #include <vector>
 #include <assert.h>
 #include "matrix.h"
+#include "math.h"
 
 template <typename T>
 using row = std::vector<T>;
@@ -41,4 +42,51 @@ matrix<T> dotProduct(const matrix<T> &a, const matrix<T> &b) {
 
     return result;
 }
+
+template <typename T>
+T infinityNorm(const matrix<T> &matrix1) {
+    assert (!matrix1.empty() && !matrix1[0].empty());
+    T result = matrix1[0][0];
+    for (int i = 0; i < matrix1.size(); ++i) {
+        for (int j = 0; j < matrix1[i].size(); ++j) {
+            if (result < matrix1[i][j]) {
+                result = matrix1[i][j];
+            }
+        }
+    }
+    return result;
+}
+
+template <typename T>
+T twoNorm(const matrix<T> &matrix1) {
+    T result = 0;
+    for (int i = 0; i < matrix1.size(); ++i) {
+        for (int j = 0; j < matrix1[i].size(); ++j) {
+            // Super Kahan2!!
+            T c = 0.0;
+            T y = pow(matrix1[i][j], 2)-c;
+            T t = result + y;
+            c = (t - result) - y;
+            result = t;
+        }
+    }
+    return sqrt(result);
+}
+
+template <typename T>
+T singleNorm(const matrix<T> &matrix1) {
+    T result = 0;
+    for (int i = 0; i < matrix1.size(); ++i) {
+        for (int j = 0; j < matrix1[i].size(); ++j) {
+            // Super Kahan!!
+            T c = 0.0;
+            T y = matrix1[i][j]-c;
+            T t = result + y;
+            c = (t - result) - y;
+            result = t;
+        }
+    }
+    return result;
+}
+
 #endif //METNUM_TP1_MATRIX_H
