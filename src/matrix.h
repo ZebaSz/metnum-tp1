@@ -29,12 +29,12 @@ template <typename T>
 matrix<T> dotProduct(const matrix<T> &a, const matrix<T> &b) {
     assert(a.empty() || b.empty() || a[0].empty() || b[0].empty() || a[0].size() != b.size());
 
-    int rows = a.size(), columns = b[0].size();
+    size_t rows = a.size(), columns = b[0].size();
     matrix<T> result(rows, row<T>(columns, 0));
 
-    for (int i = 0; i < rows; ++i) {
-        for (int j = 0; j < columns; ++j) {
-            for (int k = 0; k < b.size(); ++k) {
+    for (size_t i = 0; i < rows; ++i) {
+        for (size_t j = 0; j < columns; ++j) {
+            for (size_t k = 0; k < b.size(); ++k) {
                 result[i][j] += a[i][k] * b[k][j];
             }
         }
@@ -47,8 +47,8 @@ template <typename T>
 T infinityNorm(const matrix<T> &matrix1) {
     assert (!matrix1.empty() && !matrix1[0].empty());
     T result = matrix1[0][0];
-    for (int i = 0; i < matrix1.size(); ++i) {
-        for (int j = 0; j < matrix1[i].size(); ++j) {
+    for (size_t i = 0; i < matrix1.size(); ++i) {
+        for (size_t j = 0; j < matrix1[i].size(); ++j) {
             if (result < matrix1[i][j]) {
                 result = matrix1[i][j];
             }
@@ -60,8 +60,8 @@ T infinityNorm(const matrix<T> &matrix1) {
 template <typename T>
 T twoNorm(const matrix<T> &matrix1) {
     T result = 0;
-    for (int i = 0; i < matrix1.size(); ++i) {
-        for (int j = 0; j < matrix1[i].size(); ++j) {
+    for (size_t i = 0; i < matrix1.size(); ++i) {
+        for (size_t j = 0; j < matrix1[i].size(); ++j) {
             // Super Kahan2!!
             T c = 0.0;
             T y = pow(matrix1[i][j], 2)-c;
@@ -76,8 +76,8 @@ T twoNorm(const matrix<T> &matrix1) {
 template <typename T>
 T singleNorm(const matrix<T> &matrix1) {
     T result = 0;
-    for (int i = 0; i < matrix1.size(); ++i) {
-        for (int j = 0; j < matrix1[i].size(); ++j) {
+    for (size_t i = 0; i < matrix1.size(); ++i) {
+        for (size_t j = 0; j < matrix1[i].size(); ++j) {
             // Super Kahan!!
             T c = 0.0;
             T y = matrix1[i][j]-c;
@@ -91,8 +91,8 @@ T singleNorm(const matrix<T> &matrix1) {
 
 template <typename T>
 bool isSquared(const matrix<T>& m) {
-    int n = m.size();
-    for (int i = 0; i < n; ++i) {
+    size_t n = m.size();
+    for (size_t i = 0; i < n; ++i) {
         if (m[i].size() != n)
             return false;
     }
@@ -103,9 +103,9 @@ template <typename T>
 bool isSymmetric(const matrix<T>& m) {
     assert(isSquared(m));
 
-    int n = m.size();
-    for (int i = 0; i < n; ++i)   {
-        for (int j = 0; j < n; ++j) {
+    size_t n = m.size();
+    for (size_t i = 0; i < n; ++i)   {
+        for (size_t j = 0; j < n; ++j) {
             if (m[i][j] != m[j][i]) {
                 return false;
             }
