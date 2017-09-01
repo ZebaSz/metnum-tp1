@@ -27,7 +27,7 @@ matrix<T> toMatrix(T** arr, int height, int width) {
 
 template <typename T>
 matrix<T> dotProduct(const matrix<T> &a, const matrix<T> &b) {
-    assert(a.empty() || b.empty() || a[0].empty() || b[0].empty() || a[0].size() != b.size());
+    assert(!(a.empty() || b.empty() || a[0].empty() || b[0].empty() || a[0].size() != b.size()));
 
     size_t rows = a.size(), columns = b[0].size();
     matrix<T> result(rows, row<T>(columns, 0));
