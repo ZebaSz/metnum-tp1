@@ -89,4 +89,30 @@ T singleNorm(const matrix<T> &matrix1) {
     return result;
 }
 
+template <typename T>
+bool isSquared(const matrix<T>& m) {
+    int n = m.size();
+    for (int i = 0; i < n; ++i) {
+        if (m[i].size() != n)
+            return false;
+    }
+    return true;
+}
+
+template <typename T>
+bool isSymmetric(const matrix<T>& m) {
+    assert(isSquared(m));
+
+    int n = m.size();
+    for (int i = 0; i < n; ++i)   {
+        for (int j = 0; j < n; ++j) {
+            if (m[i][j] != m[j][i]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+
 #endif //METNUM_TP1_MATRIX_H
