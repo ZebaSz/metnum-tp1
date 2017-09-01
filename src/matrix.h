@@ -63,9 +63,9 @@ namespace Matrix {
     T twoNorm(const matrix<T> &matrix1) {
         T result = 0;
         for (size_t i = 0; i < matrix1.size(); ++i) {
+            T c = 0.0;
             for (size_t j = 0; j < matrix1[i].size(); ++j) {
                 // Super Kahan2!!
-                T c = 0.0;
                 T y = pow(matrix1[i][j], 2) - c;
                 T t = result + y;
                 c = (t - result) - y;

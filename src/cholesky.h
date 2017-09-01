@@ -38,7 +38,7 @@ matrix<T> cholesky_factorization(matrix<T> &mx) {
 
         for (size_t j = i+1; j < n; ++j) {
             T sum_cols_ij = 0;
-            T c = 0.0;
+            c = 0.0;
             for (size_t k=0; k < i; ++k) {
                 //Super Kahan!
                 T y = (L[j][k] * L[i][k])-c;
