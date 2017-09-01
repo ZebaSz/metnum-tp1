@@ -23,26 +23,34 @@ matrix<T> cholesky_factorization(matrix<T> &mx) {
     }
 
     for (int i = 1; i < n-1; ++i) {
-        size_t sum_col_i = 0;
+        T sum_col_i = 0;
         for (int k = 0; k < i; ++k) {
-            //Implementar Super Kahan!
-            sum_col_i += pow(L[i][k], 2);
+            //Super Kahan!
+            T c = 0.0;
+            T y = pow(L[i][k], 2)-c;
+            T t = sum_col_i + y;
+            c = (t - sum_col_i) - y;
+            sum_col_i = t;
         }
-        size_t lii = mx[i][i] - sum_col_i;
+        T lii = mx[i][i] - sum_col_i;
         assert(lii > 0);
         L[i][i] = sqrt(lii);
 
         for (int j = i+1; j < n; ++j) {
-            size_t sum_cols_ij = 0;
+            T sum_cols_ij = 0;
             for (int k=0; k < i; ++k) {
-                //Implementar Super Kahan!
-                sum_cols_ij += L[j][k] * L[i][k];
+                //Super Kahan!
+                T c = 0.0;
+                T y = (L[j][k] * L[i][k])-c;
+                T t = sum_cols_ij + y;
+                c = (t - sum_cols_ij) - y;
+                sum_cols_ij = t;
             }
 
             L[j][i] = (mx[j][i] - sum_cols_ij) / L[i][i];
         }
     }
-    size_t sum_Lnk = 0;
+    T sum_Lnk = 0;
     for (int k=0; k < n-1; ++k) {
         sum_Lnk += pow(L[n-1][k],2);
     }
