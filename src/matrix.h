@@ -105,7 +105,7 @@ bool isSymmetric(const matrix<T>& m) {
 
     size_t n = m.size();
     for (size_t i = 0; i < n; ++i)   {
-        for (size_t j = 0; j < n; ++j) {
+        for (size_t j = 0; j < i; ++j) {
             if (m[i][j] != m[j][i]) {
                 return false;
             }
