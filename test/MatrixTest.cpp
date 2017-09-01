@@ -11,7 +11,7 @@ TEST(MatrixTest, square_array) {
             arr[i][j] = value;
         }
     }
-    matrix<int> mx = toMatrix(arr, size, size);
+    matrix<int> mx = Matrix::fromArr(arr, size, size);
     ASSERT_EQ(mx.size(), (size_t)size);
     for (size_t i = 0; i < mx.size(); ++i) {
         ASSERT_EQ(mx[i].size(), (size_t)size);
@@ -36,9 +36,9 @@ TEST(MatrixTest, norm){
             arr[i][j] = value;
         }
     }
-    matrix<int> mx = toMatrix(arr, size, size);
-    ASSERT_EQ(infinityNorm(mx), 1);
-    ASSERT_EQ(twoNorm(mx), 5);
-    ASSERT_EQ(singleNorm(mx), 25);
+    matrix<int> mx = Matrix::fromArr(arr, size, size);
+    ASSERT_EQ(Matrix::infinityNorm(mx), 1);
+    ASSERT_EQ(Matrix::twoNorm(mx), 5);
+    ASSERT_EQ(Matrix::singleNorm(mx), 25);
 
 }

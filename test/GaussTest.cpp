@@ -58,7 +58,7 @@ TEST(GaussTest, disordred) {
     arr[1] = new int[3]{1,0,0};
     arr[2] = new int[3]{0,1,0};
 
-    matrix<int> m = toMatrix(arr, 3, 3);
+    matrix<int> m = Matrix::fromArr(arr, 3, 3);
     gaussian_elimination(m);
 
     for (int i = 0; i < 3; ++i) {
@@ -67,7 +67,7 @@ TEST(GaussTest, disordred) {
     arr[0] = new int[3]{1,0,0};
     arr[1] = new int[3]{0,1,2};
     arr[2] = new int[3]{0,0,-2};
-    ASSERT_EQ(toMatrix(arr, 3, 3), m);
+    ASSERT_EQ(Matrix::fromArr(arr, 3, 3), m);
 
     for (int i = 0; i < 3; ++i) {
         delete[] arr[i];
