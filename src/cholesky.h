@@ -28,7 +28,9 @@ matrix<T> cholesky_factorization(matrix<T> &mx) {
             //Implementar Super Kahan!
             sum_col_i += pow(L[i][k], 2);
         }
-        L[i][i] = sqrt(mx[i][i] - sum_col_i);
+        size_t lii = mx[i][i] - sum_col_i;
+        assert(lii > 0);
+        L[i][i] = sqrt(lii);
 
         for (int j = i+1; j < n; ++j) {
             size_t sum_cols_ij = 0;
