@@ -11,7 +11,7 @@ TEST(MatrixTest, square_array) {
             arr[i][j] = value;
         }
     }
-    matrix<int> mx = toMatrix(arr, size, size);
+    matrix<int> mx = Matrix::fromArr(arr, size, size);
     ASSERT_EQ(mx.size(), (size_t)size);
     for (size_t i = 0; i < mx.size(); ++i) {
         ASSERT_EQ(mx[i].size(), (size_t)size);
@@ -19,6 +19,7 @@ TEST(MatrixTest, square_array) {
             ASSERT_EQ(mx[i][j], value);
         }
     }
+
     for (int i = 0; i < size; ++i) {
         delete[] arr[i];
     }
@@ -48,5 +49,21 @@ TEST(MatrixTest, dotProduct) {
     ASSERT_EQ(dotProduct(b, identityMatrix(3)), b);
     ASSERT_EQ(dotProduct(identityMatrix(3), a), a);
     ASSERT_EQ(dotProduct(identityMatrix(3), b), b);
+
+}
+TEST(MatrixTest, norm){
+    int size = 5;
+    int value = 1;
+    int** arr = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            arr[i][j] = value;
+        }
+    }
+    matrix<int> mx = Matrix::fromArr(arr, size, size);
+    ASSERT_EQ(Matrix::infinityNorm(mx), 1);
+    ASSERT_EQ(Matrix::twoNorm(mx), 5);
+    ASSERT_EQ(Matrix::singleNorm(mx), 25);
 
 }

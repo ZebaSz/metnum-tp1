@@ -43,7 +43,7 @@ TEST(GaussTest, lower_triangle_with_gap) {
     // [0, 0, 0, 0, 1]
     for (size_t i = 0; i < m.size(); ++i) {
         for (size_t j = 0; j < m[i].size(); ++j) {
-            if(!(i == gap_row && j == i + 1) && i != j || i == gap_row + 1) {
+            if(!(i == gap_row && j == i + 1) && (i != j || i == gap_row + 1)) {
                 ASSERT_EQ(m[i][j], 0) << "i=" << i << ",j=" << j;
             } else {
                 ASSERT_EQ(m[i][j], 1) << "i=" << i << ",j=" << j;
@@ -58,7 +58,7 @@ TEST(GaussTest, disordred) {
     arr[1] = new int[3]{1,0,0};
     arr[2] = new int[3]{0,1,0};
 
-    matrix<int> m = toMatrix(arr, 3, 3);
+    matrix<int> m = Matrix::fromArr(arr, 3, 3);
     gaussian_elimination(m);
 
     for (int i = 0; i < 3; ++i) {
@@ -67,7 +67,7 @@ TEST(GaussTest, disordred) {
     arr[0] = new int[3]{1,0,0};
     arr[1] = new int[3]{0,1,2};
     arr[2] = new int[3]{0,0,-2};
-    ASSERT_EQ(toMatrix(arr, 3, 3), m);
+    ASSERT_EQ(Matrix::fromArr(arr, 3, 3), m);
 
     for (int i = 0; i < 3; ++i) {
         delete[] arr[i];
