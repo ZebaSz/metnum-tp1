@@ -28,6 +28,16 @@ namespace Matrix {
     }
 
     template<typename T>
+    int rows(const matrix<T> &m) {
+        return m.size();
+    }
+
+    template<typename T>
+    int columns(const matrix<T> &m) {
+        return m[0].size();
+    }
+
+    template<typename T>
     matrix<T> dotProduct(const matrix<T> &a, const matrix<T> &b) {
         assert(!(a.empty() || b.empty() || a[0].empty() || b[0].empty() || a[0].size() != b.size()));
 
