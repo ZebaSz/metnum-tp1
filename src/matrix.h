@@ -12,6 +12,8 @@ using row = std::vector<T>;
 template <typename T>
 using matrix = std::vector< row<T> >;
 
+typedef std::size_t size_t;
+
 namespace Matrix {
 
     template<typename T>
@@ -39,7 +41,11 @@ namespace Matrix {
 
     template<typename T>
     matrix<T> dotProduct(const matrix<T> &a, const matrix<T> &b) {
-        assert(!(a.empty() || b.empty() || a[0].empty() || b[0].empty() || a[0].size() != b.size()));
+        assert(!a.empty());
+        assert(!b.empty());
+        assert(!a[0].empty());
+        assert(!b[0].empty());
+        assert(a[0].size() == b.size());
 
         size_t rows = a.size(), columns = b[0].size();
         matrix<T> result(rows, row<T>(columns, 0));
@@ -48,6 +54,41 @@ namespace Matrix {
             for (size_t j = 0; j < columns; ++j) {
                 for (size_t k = 0; k < b.size(); ++k) {
                     result[i][j] += a[i][k] * b[k][j];
+                }
+            }
+        }
+
+        return result;
+    }
+
+    template<typename T>
+    matrix<T> traspose(const matrix<T> &m) {
+        assert(!(m.empty() || m[0].empty()));
+        matrix<T> result(m[0].size(), row<T>(m.size(), 0));
+
+        for (size_t i = 0; i < m.size(); ++i) {
+            for (size_t j = 0; j < m[i].size(); ++j) {
+                result[j][i] = m[i][j];
+            }
+        }
+
+        return result;
+    }
+
+    template<typename T>
+    matrix<T> trasposedProduct(const matrix<T> &m) {
+        assert(!(m.empty() || m[0].empty()));
+
+        T rows = m.size(), columns = m[0].size();
+        matrix<T> result(rows, row<T>(rows, 0));
+
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j <= i; ++j) {
+                for (size_t k = 0; k < m.size(); ++k) {
+                    result[i][j] += m[i][k] * m[j][k];
+                }
+                if (i != j) {
+                    result[j][i] = result[i][j];
                 }
             }
         }
@@ -125,6 +166,9 @@ namespace Matrix {
         }
         return true;
     }
+
+    matrix<int> identityMatrix(int size);
+
 }
 
 #endif //METNUM_TP1_MATRIX_H

@@ -26,6 +26,44 @@ TEST(MatrixTest, square_array) {
     delete[] arr;
 }
 
+TEST(MatrixTest, dotProduct) {
+    matrix<int> a = {
+            {2, 0, 1},
+            {3, 0, 0},
+            {5, 1, 1}};
+
+    matrix<int> b = {
+            {1, 0, 1},
+            {1, 2, 1},
+            {1, 1, 0}};
+
+    matrix<int> expected = {{3, 1, 2},
+                            {3, 0, 3},
+                            {7, 3, 6}};
+
+    matrix<int> result = Matrix::dotProduct(a, b);
+
+    ASSERT_EQ(Matrix::dotProduct(a, b), expected);
+
+    ASSERT_EQ(Matrix::dotProduct(a, Matrix::identityMatrix(3)), a);
+    ASSERT_EQ(Matrix::dotProduct(b, Matrix::identityMatrix(3)), b);
+    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), a), a);
+    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), b), b);
+
+
+    a = {{2, 5, 1},
+         {4, 3, 1}};
+
+    b = {{1, 0, 0},
+         {0, 2, 0},
+         {2, 3, 1}};
+
+    expected = {{4, 13, 1},
+                {6, 9,  1}};
+
+    ASSERT_EQ(Matrix::dotProduct(a, b), expected);
+}
+
 TEST(MatrixTest, norm){
     int size = 5;
     int value = 1;
@@ -40,5 +78,62 @@ TEST(MatrixTest, norm){
     ASSERT_EQ(Matrix::infinityNorm(mx), 1);
     ASSERT_EQ(Matrix::twoNorm(mx), 5);
     ASSERT_EQ(Matrix::singleNorm(mx), 25);
+}
 
+TEST(MatrixTest, traspose){
+    int size = 5;
+    int value = 1;
+    int** arr = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            arr[i][j] = value;
+            value++;
+        }
+    }
+    matrix<int> mx = Matrix::fromArr(arr, size, size);
+    matrix<int> trasposedMX = Matrix::traspose(mx);
+    matrix<int> trasposed_trasposedMX = Matrix::traspose(trasposedMX);
+
+    for (int i = 0; i < mx.size(); ++i) {
+        for (int j = 0; j < mx[i].size(); ++j) {
+            ASSERT_EQ(mx[i][j], trasposed_trasposedMX[i][j]);
+        }
+    }
+
+    int sizeN = 5;
+    int sizeM = 6;
+    int anotherValue = 1;
+    int** notSquared_arr = new int*[sizeM];
+    for (int i = 0; i < sizeM; ++i) {
+        notSquared_arr[i] = new int[sizeN];
+        for (int j = 0; j < sizeN; ++j) {
+            notSquared_arr[i][j] = anotherValue;
+            anotherValue++;
+        }
+    }
+    matrix<int> notSquared_mx = Matrix::fromArr(notSquared_arr, sizeM, sizeN);
+    matrix<int> notSquared_trasposedMX = Matrix::traspose(notSquared_mx);
+    matrix<int> trasposed_notSquared_trasposedMX = Matrix::traspose(notSquared_trasposedMX);
+
+    for (int i = 0; i < notSquared_mx.size(); ++i) {
+        for (int j = 0; j < notSquared_mx[i].size(); ++j) {
+            ASSERT_EQ(notSquared_mx[i][j], trasposed_notSquared_trasposedMX[i][j]);
+        }
+    }
+}
+
+TEST(MatrixTest, trasposeProduct) {
+    int size = 5;
+    int value = 1;
+    int** arr = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            arr[i][j] = value;
+            value++;
+        }
+    }
+    matrix<int> mx = Matrix::fromArr(arr, size, size);
+    ASSERT_EQ(Matrix::dotProduct(mx, Matrix::traspose(mx)), Matrix::trasposedProduct(mx));
 }
