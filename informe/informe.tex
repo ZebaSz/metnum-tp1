@@ -1,25 +1,30 @@
 \documentclass[10pt, a4paper, spanish]{article}
 \usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
 \usepackage[utf8]{inputenc}
-\usepackage[spanish]{babel}
+\usepackage[spanish,es-nodecimaldot]{babel}
 \usepackage{caratula}
 \usepackage[pdfencoding=auto, colorlinks=true, linkcolor=blue]{hyperref}
 \usepackage[boxruled, longend]{algorithm2e}
 \usepackage{wrapfig}
-\usepackage{tikz}
+% \usepackage{tikz}
 \usepackage[rightcaption]{sidecap}
-\usetikzlibrary{babel}
+% \usetikzlibrary{babel}
+\graphicspath{imagenes/}
 
-\tikzset{nodeList/.style={every node/.style={draw, circle}}}
-\tikzset{pathList/.style={every node/.style={midway, fill=white}}}
+% \tikzset{nodeList/.style={every node/.style={draw, circle}}}
+% \tikzset{pathList/.style={every node/.style={midway, fill=white}}}
+
+
+\newcommand{\ord}{\ensuremath{\operatorname{O}}}
+\newcommand{\nat}{\ensuremath{\mathbb{N}}}
 
 \begin{document}
-
+\batchmode
 % CARATULA
 \materia{Métodos Numéricos}
 \submateria{Segundo Cuatrimestre de 2017}
 \fecha{\today}
-\grupo{}
+\grupo{Fuerte a Pachi}
 \titulo{Trabajo Práctico 1}
 
 \integrante{Tarrío, Ignacio}{363/15}{itarrio@dc.uba.ar}
@@ -29,10 +34,11 @@
 
 \maketitle
 
+\newpage
 \tableofcontents
 
-\pagebreak
-
+\newpage
+\input{intro}
 
 % compilar 2 veces para actualizar las referencias
 
