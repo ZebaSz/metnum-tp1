@@ -95,8 +95,8 @@ TEST(MatrixTest, traspose){
     matrix<int> trasposedMX = Matrix::traspose(mx);
     matrix<int> trasposed_trasposedMX = Matrix::traspose(trasposedMX);
 
-    for (int i = 0; i < mx.size(); ++i) {
-        for (int j = 0; j < mx[i].size(); ++j) {
+    for (size_t i = 0; i < mx.size(); ++i) {
+        for (size_t j = 0; j < mx[i].size(); ++j) {
             ASSERT_EQ(mx[i][j], trasposed_trasposedMX[i][j]);
         }
     }
@@ -116,8 +116,8 @@ TEST(MatrixTest, traspose){
     matrix<int> notSquared_trasposedMX = Matrix::traspose(notSquared_mx);
     matrix<int> trasposed_notSquared_trasposedMX = Matrix::traspose(notSquared_trasposedMX);
 
-    for (int i = 0; i < notSquared_mx.size(); ++i) {
-        for (int j = 0; j < notSquared_mx[i].size(); ++j) {
+    for (size_t i = 0; i < notSquared_mx.size(); ++i) {
+        for (size_t j = 0; j < notSquared_mx[i].size(); ++j) {
             ASSERT_EQ(notSquared_mx[i][j], trasposed_notSquared_trasposedMX[i][j]);
         }
     }

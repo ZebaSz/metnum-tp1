@@ -76,15 +76,15 @@ TEST(CholeskyTest, factorize5by5Matrix) {
     };
 
     matrix<float> l_result = cholesky_factorization(m);
-    for (int i = 0; i < m.size(); ++i) {
-        for (int j = 0; j < m.size(); ++j) {
+    for (size_t i = 0; i < m.size(); ++i) {
+        for (size_t j = 0; j < m.size(); ++j) {
             ASSERT_NEAR(l_expected[j][i], l_result[j][i], 0.00001) << "j=" << j << " ,i=" << i;
         }
     }
 
     matrix<float> m_result = Matrix::trasposedProduct(l_result);
-    for (int i = 0; i < m.size(); ++i) {
-        for (int j = 0; j < m.size(); ++j) {
+    for (size_t i = 0; i < m.size(); ++i) {
+        for (size_t j = 0; j < m.size(); ++j) {
             ASSERT_NEAR(m[j][i], m_result[j][i], 0.00001) << "j=" << j << " ,i=" << i;
         }
     }
@@ -113,15 +113,15 @@ TEST(CholeskyTest, factorizeBigMatrix) {
 
 
     matrix<float> l_result = cholesky_factorization(m);
-    for (int i = 0; i < m.size(); ++i) {
-        for (int j = 0; j < m.size(); ++j) {
+    for (size_t i = 0; i < m.size(); ++i) {
+        for (size_t j = 0; j < m.size(); ++j) {
             ASSERT_NEAR(l_expected[j][i], l_result[j][i], 0.00001) << "j=" << j << " ,i=" << i;
         }
     }
 
     matrix<float> m_result = Matrix::trasposedProduct(l_result);
-    for (int i = 0; i < m.size(); ++i) {
-        for (int j = 0; j < m.size(); ++j) {
+    for (size_t i = 0; i < m.size(); ++i) {
+        for (size_t j = 0; j < m.size(); ++j) {
             ASSERT_NEAR(m[j][i], m_result[j][i], 0.00001) << "j=" << j << " ,i=" << i;
         }
     }

@@ -79,7 +79,7 @@ namespace Matrix {
     matrix<T> trasposedProduct(const matrix<T> &m) {
         assert(!(m.empty() || m[0].empty()));
 
-        T rows = m.size(), columns = m[0].size();
+        size_t rows = m.size();
         matrix<T> result(rows, row<T>(rows, 0));
 
         for (size_t i = 0; i < rows; ++i) {
