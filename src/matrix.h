@@ -12,6 +12,8 @@ using row = std::vector<T>;
 template <typename T>
 using matrix = std::vector< row<T> >;
 
+typedef std::size_t size_t;
+
 namespace Matrix {
 
     template<typename T>
@@ -115,6 +117,9 @@ namespace Matrix {
         }
         return true;
     }
+
+    matrix<int> identityMatrix(int size);
+
 }
 
 #endif //METNUM_TP1_MATRIX_H

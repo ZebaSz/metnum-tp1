@@ -41,15 +41,27 @@ TEST(MatrixTest, dotProduct) {
                             {3, 0, 3},
                             {7, 3, 6}};
 
-    matrix<int> result = dotProduct(a, b);
+    matrix<int> result = Matrix::dotProduct(a, b);
 
-    ASSERT_EQ(result, expected);
+    ASSERT_EQ(Matrix::dotProduct(a, b), expected);
 
-    ASSERT_EQ(dotProduct(a, identityMatrix(3)), a);
-    ASSERT_EQ(dotProduct(b, identityMatrix(3)), b);
-    ASSERT_EQ(dotProduct(identityMatrix(3), a), a);
-    ASSERT_EQ(dotProduct(identityMatrix(3), b), b);
+    ASSERT_EQ(Matrix::dotProduct(a, Matrix::identityMatrix(3)), a);
+    ASSERT_EQ(Matrix::dotProduct(b, Matrix::identityMatrix(3)), b);
+    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), a), a);
+    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), b), b);
 
+
+    a = {{2, 5, 1},
+         {4, 3, 1}};
+
+    b = {{1, 0, 0},
+         {0, 2, 0},
+         {2, 3, 1}};
+
+    expected = {{4, 13, 1},
+                {6, 9,  1}};
+
+    ASSERT_EQ(Matrix::dotProduct(a, b), expected);
 }
 TEST(MatrixTest, norm){
     int size = 5;
