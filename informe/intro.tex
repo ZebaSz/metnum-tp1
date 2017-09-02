@@ -1,0 +1,12 @@
+\section{Introducción}
+
+En este informe se detalla el trabajo realizado sobre el análisis de los métodos numéricos para la técnica computacional de fotometría estéreo que permite generar digitalizaciones de objetos 3D basados en imágenes.
+
+Para esta práctica iniciamos el trabajo calibrando la dirección de las fuentes de luz para luego reconstruir los objetos en 3D. Comenzamos el desarrollo tieniendo varios conjuntos de imagenes, los cuales son 12 fotos de un objeto en un ambiente de iluminación controlada donde cada una tiene fuentes de luz diferentes entre ellas, y una imagen extra que es la \textit{máscara} del objeto, es decir, una imagen completamente negra, salvo donde está el objeto en el resto de las fotos, que está totalmente blanco. En base a estas imágenes y a la técnica mencionada, debemos reconstruir y medir la posición y distancia de los objetos con respecto a la cámara.
+
+Para el trabajo práctico consideramos las siguientes situaciones:
+\begin{itemize}
+  \item Para todos los conjunto de imagenes, asumimos que las direcciones de las fuentes de luz son las mismas.
+  \item Los vectores de dirección de fuente de luz fueron normalizados.
+  \item Todas las imagenes tienen los mismos tamaños.
+\end{itemize}
