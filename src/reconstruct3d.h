@@ -3,6 +3,7 @@
 
 
 #include "matrix.h"
+#include "gauss.h"
 
 struct options {
 
@@ -33,8 +34,8 @@ matrix<double> sourceOfLightMatrix(sourceOfLight s1, sourceOfLight s2, sourceOfL
  * @param i1, i2, i3 intensity of light on the pixel
  * @return a vector m
  */
-matrix<double> step5(matrix<double> sm, double i1, double i2, double i3) {
-    return matrix<double>();
+row<double> step5(const matrix<double>& sm, double i1, double i2, double i3) {
+    return Matrix::solveLowerTriangularSquaredSystem(sm, {i1, i2, i3});
 }
 
 /**
@@ -45,13 +46,14 @@ matrix<double> step5(matrix<double> sm, double i1, double i2, double i3) {
  * @param s1, s2, s3 the source of light for the images
  * @return the normal field of the image
  */
-matrix<double> normalField(matrix<double> i1, matrix<double> i2 , matrix<double> i3, sourceOfLight s1, sourceOfLight s2, sourceOfLight s3) {
+matrix<double> normalField(const matrix<double>& i1, const matrix<double>& i2 , const matrix<double>& i3, sourceOfLight s1, sourceOfLight s2, sourceOfLight s3) {
     size_t height = i1.size(), width = i1[0].size();
     matrix<double> sm = sourceOfLightMatrix(s1, s2, s3);
-    matrix<matrix<double>> normal;
+    gaussian_elimination(sm);
+    matrix<row<double>> normal;
 
     for (size_t i = 0; i < height; i++) {
-        row<matrix<double>> r;
+        row<row<double>> r;
         for (size_t j = 0; j < width; j++) {
             r.push_back(step5(sm, i1[i][j], i2[i][j], i3[i][j]));
         }
