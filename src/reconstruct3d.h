@@ -38,6 +38,10 @@ row<double> step5(const matrix<double>& sm, double i1, double i2, double i3) {
     return Matrix::solveLowerTriangularSquaredSystem(sm, {i1, i2, i3});
 }
 
+matrix<double> step6(const matrix<row<double>>& sm) {
+    return matrix<double>();
+}
+
 /**
  * Construction of the normal field, for each pixel
  * (step 5 and 6)
@@ -60,6 +64,7 @@ matrix<double> normalField(const matrix<double>& i1, const matrix<double>& i2 , 
         normal.push_back(r);
     }
 
+    return step6(normal);
 }
 
 
