@@ -123,6 +123,44 @@ TEST(MatrixTest, traspose){
     }
 }
 
+TEST(MatrixTest, isLowerTriangular) {
+    int size = 5;
+    int value = 1;
+    int** arr = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<int> A = Matrix::fromArr(arr, size, size);
+    assert(Matrix::isLowerTriangular(A));
+}
+
+TEST(MatrixTest, isUpperTriangular) {
+    int size = 5;
+    int value = 1;
+    int** arr = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            if (j >= i) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<int> A = Matrix::fromArr(arr, size, size);
+    assert(Matrix::isUpperTriangular(A));
+}
+
 TEST(MatrixTest, trasposeProduct) {
     int size = 5;
     int value = 1;
@@ -144,9 +182,13 @@ TEST(MatrixTest, solveLowerTriangularSquaredSystem) {
     double** arr = new double*[size];
     for (int i = 0; i < size; ++i) {
         arr[i] = new double[size];
-        for (int j = 0; j < i+1; ++j) {
-            arr[i][j] = value;
-            value++;
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
         }
     }
     matrix<double> A = Matrix::fromArr(arr, size, size);
@@ -178,9 +220,13 @@ TEST(MatrixTest, solveUpperTriangularSquaredSystem) {
     double** arr = new double*[size];
     for (int i = size-1; i >= 0; --i) {
         arr[i] = new double[size];
-        for (int j = size-1; j >= i; --j) {
-            arr[i][j] = value;
-            value++;
+        for (int j = size-1; j >= 0; --j) {
+            if ( j >= i) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
         }
     }
     matrix<double> A = Matrix::fromArr(arr, size, size);

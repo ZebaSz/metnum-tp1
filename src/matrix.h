@@ -153,6 +153,40 @@ namespace Matrix {
     }
 
     template<typename T>
+    bool isLowerTriangular(const matrix<T> &m) {
+        size_t n = m.size();
+        for (size_t i = 0; i < n; ++i) {
+            size_t mDimension = m[i].size();
+            if (n != mDimension) {
+                return false;
+            }
+            for (size_t j = i+1; j < mDimension; ++j) {
+                if (m[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    template<typename T>
+    bool isUpperTriangular(const matrix<T> &m) {
+        size_t n = m.size();
+        for (size_t i = 0; i < n; ++i) {
+            size_t mDimension = m[i].size();
+            if (n != mDimension) {
+                return false;
+            }
+            for (size_t j = 0; j < i; ++j) {
+                if (m[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    template<typename T>
     bool isSymmetric(const matrix<T> &m) {
         assert(isSquared(m));
 
@@ -170,8 +204,8 @@ namespace Matrix {
 
     // This should solve Ax=b and return x for lower triangular squared systems
     template<typename T>
-    row<T> solveLowerTriangularSquaredSystem(matrix<T> A, row<T> b){
-        assert(isSquared(A));
+    row<T> solveLowerTriangularSquaredSystem(const matrix<T> &A, const row<T> &b){
+        assert(isLowerTriangular(A));
 
         size_t solution_size = A.size();
         row<T> solution(solution_size, 0);
@@ -192,8 +226,8 @@ namespace Matrix {
 
     // This should solve Ax=b and return x for upper triangular squared systems
     template<typename T>
-    row<T> solveUpperTriangularSquaredSystem(matrix<T> A, row<T> b){
-        assert(isSquared(A));
+    row<T> solveUpperTriangularSquaredSystem(const matrix<T> &A, const row<T> &b){
+        assert(isUpperTriangular(A));
 
         size_t solution_size = A.size();
         row<T> solution(solution_size, 0);
@@ -211,6 +245,8 @@ namespace Matrix {
 
         return solution;
     }
+
+
 
     matrix<int> identityMatrix(int size);
 
