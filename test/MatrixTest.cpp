@@ -171,3 +171,37 @@ TEST(MatrixTest, solveLowerTriangularSquaredSystem) {
         ASSERT_EQ(expected_2[i], result_2[i]) << "i=" << i;
     }
 }
+
+TEST(MatrixTest, solveUpperTriangularSquaredSystem) {
+    int size = 5;
+    double value = 1;
+    double** arr = new double*[size];
+    for (int i = size-1; i >= 0; --i) {
+        arr[i] = new double[size];
+        for (int j = size-1; j >= i; --j) {
+            arr[i][j] = value;
+            value++;
+        }
+    }
+    matrix<double> A = Matrix::fromArr(arr, size, size);
+    row<double> b = { 55, 45, 35, 25, 15 };
+    double expected0 = 15;
+    double expected1 = (25 - (expected0*2))/3;
+    double expected2 = (35 - (expected0*4) - (expected1*5))/6;
+    double expected3 = (45 - (expected0*7) - (expected1*8) - (expected2*9))/10;
+    double expected4 = (55 - (expected0*11) - (expected1*12) - (expected2*13) - (expected3*14))/15;
+
+    row<double> expected = { expected4, expected3, expected2, expected1,  expected0 };
+    row<double> result = Matrix::solveUpperTriangularSquaredSystem(A, b);
+    for (size_t i = 0; i < expected.size(); ++i) {
+        ASSERT_NEAR(expected[i], result[i], 0.0000001) << "i=" << i;
+    }
+
+    matrix<int> C = Matrix::identityMatrix(5);
+    row<int> d = { 19, 18, 17, 15, 13 };
+    row<int> expected_2 = d;
+    row<int> result_2 = Matrix::solveUpperTriangularSquaredSystem(C, d);
+    for (size_t i = 0; i < expected_2.size(); ++i) {
+        ASSERT_EQ(expected_2[i], result_2[i]) << "i=" << i;
+    }
+}
