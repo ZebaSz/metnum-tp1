@@ -8,7 +8,6 @@
  * converting it into row echelon form if possible.
  *
  * @pre the matrix is in augmented form
- * @tparam T
  * @param mx the matrix
  */
 template <typename T>
@@ -29,7 +28,7 @@ template <typename T>
 bool find_swap_rows(matrix<T>& m, size_t col);
 
 template <typename T>
-void gaussian_elimination(matrix<T> &mx) {
+void gaussian_elimination(matrix<T>& mx) {
     for (size_t i = 0; i < mx.size() - 1; ++i) {
         if(find_swap_rows(mx, i)) {
             for (size_t j = i + 1; j < mx.size(); ++j) {
