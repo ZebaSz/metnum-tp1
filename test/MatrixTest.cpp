@@ -162,4 +162,12 @@ TEST(MatrixTest, solveLowerTriangularSquaredSystem) {
     for (size_t i = 0; i < expected.size(); ++i) {
         ASSERT_NEAR(expected[i], result[i], 0.0000001) << "i=" << i;
     }
+
+    matrix<int> C = Matrix::identityMatrix(5);
+    row<int> d = { 13, 15, 17, 18, 19};
+    row<int> expected_2 = d;
+    row<int> result_2 = Matrix::solveLowerTriangularSquaredSystem(C, d);
+    for (size_t i = 0; i < expected_2.size(); ++i) {
+        ASSERT_EQ(expected_2[i], result_2[i]) << "i=" << i;
+    }
 }
