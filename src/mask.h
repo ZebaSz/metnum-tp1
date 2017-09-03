@@ -15,13 +15,13 @@ struct center_and_radius {
 
 template <typename T>
 center_and_radius get_center_and_radius(matrix<T> &mask) {
-    int leftColumn = columns(img) - 1;
+    int leftColumn = columns(mask) - 1;
     int rightColumn = 0;
-    int upperRow = rows(img) - 1;
+    int upperRow = rows(mask) - 1;
     int lowerRow = 0;
 
-    for (int i = 0; i < filas(img); i++) {
-        for (int j = 0; j < columnas(img); j++) {
+    for (int i = 0; i < rows(mask); i++) {
+        for (int j = 0; j < columns(mask); j++) {
             if (mask[i][j] > 250) {
                 if (j < leftColumn) leftColumn = j;
                 if (j > rightColumn) rightColumn = j;
@@ -55,8 +55,8 @@ matrix<T> apply_mask(matrix<T> &img, matrix<T> &mask) {
     int upperRow = rows(img) - 1;
     int lowerRow = 0;
 
-    for (int i = 0; i < filas(img); i++) {
-        for (int j = 0; j < columnas(img); j++) {
+    for (int i = 0; i < rows(img); i++) {
+        for (int j = 0; j < columns(img); j++) {
             if (mask[i][j] > 250) {
                 if (j < leftColumn) leftColumn = j;
                 if (j > rightColumn) rightColumn = j;
