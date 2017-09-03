@@ -246,6 +246,23 @@ namespace Matrix {
         return solution;
     }
 
+    /*
+     * This should solve LUx=b and return x for LU systems
+     * LUx = b
+     * 1) Ly = b
+     * 2) Ux = y
+     */
+    template<typename T>
+    row<T> solveLUSystem(const matrix<T> &L, const matrix<T> &U, const row<T> &b){
+        assert(isLowerTriangular(L));
+        assert(isUpperTriangular(U));
+
+        row<T> y = solveLowerTriangularSquaredSystem(L, b);
+        row<T> x = solveUpperTriangularSquaredSystem(U, y);
+
+        return x;
+    }
+
 
 
     matrix<int> identityMatrix(int size);

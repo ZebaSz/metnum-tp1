@@ -251,3 +251,45 @@ TEST(MatrixTest, solveUpperTriangularSquaredSystem) {
         ASSERT_EQ(expected_2[i], result_2[i]) << "i=" << i;
     }
 }
+
+TEST(MatrixTest, solveLUSystem){
+    int size = 5;
+    double value = 1;
+
+    double** arr = new double*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new double[size];
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<double> L = Matrix::fromArr(arr, size, size);
+
+    double** arr2 = new double*[size];
+    for (int i = size-1; i >= 0; --i) {
+        arr2[i] = new double[size];
+        for (int j = size-1; j >= 0; --j) {
+            if ( j >= i) {
+                arr2[i][j] = value;
+                value++;
+            } else {
+                arr2[i][j] = 0;
+            }
+        }
+    }
+    matrix<double> U = Matrix::fromArr(arr2, size, size);
+
+    row<double> b = { 100, 200, 300, 400, 500 };
+    row<double> expected = { 3.34677, 0.77131, 0.00408, -0.10576, -0.77037 };
+
+    row<double> result = Matrix::solveLUSystem(L,U,b);
+
+    for (int k = 0; k < 5; ++k) {
+        ASSERT_NEAR(expected[k], result[k], 0.1);
+    }
+}
