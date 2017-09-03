@@ -167,6 +167,26 @@ namespace Matrix {
         return true;
     }
 
+
+    // This should solve Ax=b and return x
+    template<typename T>
+    row<T> solveLowerTriangularSquaredSystem(matrix<T> A, row<T> b){
+        assert(isSquared(A));
+
+        size_t solution_size = A.size();
+        row<T> solution(solution_size, 0);
+        for (int i = 0; i < solution_size; ++i) {
+            T sumOfRowI = 0;
+            for (int j = 0; j < i; ++j) {
+                //TODO: Kahan
+                sumOfRowI += (A[i][j] * solution[j]);
+            }
+            solution[i] = (b[i] - sumOfRowI) / A[i][i];
+        }
+
+        return solution;
+    }
+
     matrix<int> identityMatrix(int size);
 
 }

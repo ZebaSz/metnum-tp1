@@ -137,3 +137,29 @@ TEST(MatrixTest, trasposeProduct) {
     matrix<int> mx = Matrix::fromArr(arr, size, size);
     ASSERT_EQ(Matrix::dotProduct(mx, Matrix::traspose(mx)), Matrix::trasposedProduct(mx));
 }
+
+TEST(MatrixTest, solveLowerTriangularSquaredSystem) {
+    int size = 5;
+    double value = 1;
+    double** arr = new double*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new double[size];
+        for (int j = 0; j < i+1; ++j) {
+            arr[i][j] = value;
+            value++;
+        }
+    }
+    matrix<double> A = Matrix::fromArr(arr, size, size);
+    row<double> b = {15,25,35,45,55};
+    double expected0 = 15;
+    double expected1 = (25 - (expected0*2))/3;
+    double expected2 = (35 - (expected0*4) - (expected1*5))/6;
+    double expected3 = (45 - (expected0*7) - (expected1*8) - (expected2*9))/10;
+    double expected4 = (55 - (expected0*11) - (expected1*12) - (expected2*13) - (expected3*14))/15;
+
+    row<double> expected = { expected0, expected1, expected2, expected3,  expected4 };
+    row<double> result = Matrix::solveLowerTriangularSquaredSystem(A, b);
+    for (size_t i = 0; i < expected.size(); ++i) {
+        ASSERT_NEAR(expected[i], result[i], 0.0000001) << "i=" << i;
+    }
+}
