@@ -254,8 +254,6 @@ namespace Matrix {
      */
     template<typename T>
     row<T> solveLUSystem(const matrix<T> &L, const matrix<T> &U, const row<T> &b){
-        assert(isLowerTriangular(L));
-        assert(isUpperTriangular(U));
 
         row<T> y = solveLowerTriangularSquaredSystem(L, b);
         row<T> x = solveUpperTriangularSquaredSystem(U, y);
