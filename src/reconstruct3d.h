@@ -4,20 +4,13 @@
 
 #include "matrix.h"
 #include "gauss.h"
+#include "calibration.h"
 
 struct options {
 
 };
 
-struct sourceOfLight {
-    sourceOfLight(double x, double y, double z) : x(x), y(y), z(z) {}
-
-    double x;
-    double y;
-    double z;
-};
-
-matrix<double> sourceOfLightMatrix(sourceOfLight s1, sourceOfLight s2, sourceOfLight s3) {
+matrix<double> sourceOfLightMatrix(const direction& s1, const direction& s2, const direction& s3) {
     return {
         {s1.x, s2.x, s3.x},
         {s1.y, s2.y, s3.y},
@@ -39,6 +32,7 @@ row<double> step5(const matrix<double>& sm, double i1, double i2, double i3) {
 }
 
 matrix<double> step6(const matrix<row<double>>& sm) {
+    // TODO NAXIO QUE HACE ESTO?
     return matrix<double>();
 }
 
@@ -50,7 +44,8 @@ matrix<double> step6(const matrix<row<double>>& sm) {
  * @param s1, s2, s3 the source of light for the images
  * @return the normal field of the image
  */
-matrix<double> normalField(const matrix<double>& i1, const matrix<double>& i2 , const matrix<double>& i3, sourceOfLight s1, sourceOfLight s2, sourceOfLight s3) {
+matrix<double> normalField(const matrix<double>& i1, const matrix<double>& i2 , const matrix<double>& i3,
+                           const direction& s1, const direction& s2, const direction& s3) {
     size_t height = i1.size(), width = i1[0].size();
     matrix<double> sm = sourceOfLightMatrix(s1, s2, s3);
     gaussian_elimination(sm);
