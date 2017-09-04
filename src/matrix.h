@@ -261,7 +261,23 @@ namespace Matrix {
         return x;
     }
 
+    /*
+     * This should solve LL*x=b and return x for Cholesky systems
+     * LL*x = b
+     * 1) Ly = b
+     * 2) L*x = y
+     *
+     */
+    template<typename T>
+    row<T> solveCholeskySystem(const matrix<T> &L, const row<T> &b){
 
+        row<T> y = solveLowerTriangularSquaredSystem(L, b);
+
+        matrix<T> trasposedL = traspose(L);
+        row<T> x = solveUpperTriangularSquaredSystem(trasposedL, y);
+
+        return x;
+    }
 
     matrix<int> identityMatrix(int size);
 

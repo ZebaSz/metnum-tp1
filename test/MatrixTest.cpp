@@ -293,3 +293,31 @@ TEST(MatrixTest, solveLUSystem){
         ASSERT_NEAR(expected[k], result[k], 0.1);
     }
 }
+
+TEST(MatrixTest, solveCholeskySystem){
+    int size = 5;
+    double value = 1;
+
+    double** arr = new double*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new double[size];
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<double> L = Matrix::fromArr(arr, size, size);
+
+    row<double> b = { 1, 2, 4, 6, 105 };
+
+    row<double> result = Matrix::solveCholeskySystem(L,b);
+
+    matrix<double> trasposedL = Matrix::traspose(L);
+
+    row<double> result_with_trasposed = Matrix::solveLUSystem(L,trasposedL,b);
+    ASSERT_EQ(result_with_trasposed, result);
+}
