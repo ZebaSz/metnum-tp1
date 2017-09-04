@@ -14,18 +14,17 @@ struct direction{
  * Calibrate the illumination sources, returning an array of directions
  *
  * @pre imgs must have all the same dimensions. imgs must not be empty.
- * @tparam vector<matrix<double>>
  * @param imgs the vector of matrixes of the images of the sphere
  */
-vector<direction> calibrate(const vector<matrix<double> > &imgs, const &matrix<double> &mask) {
+std::vector<direction> calibrate(const std::vector<matrix<double> >& imgs, const matrix<double>& mask) {
     assert(imgs.size() > 0);
 
-    center_and_radius car = get_center_and_radius(mask);
+    circle car = get_center_and_radius(mask);
 
-    vector<direction> directions;
-    int width = columns(imgs[0]);
-    int height = height(imgs[0]);
-    for (int k = 0; k < imgs.size(); k++) {
+    std::vector<direction> directions;
+    int width = Matrix::columns(imgs[0]);
+    int height = Matrix::rows(imgs[0]);
+    for (int k = 0; k < imgs.size(); ++k) {
         double x;
         double y;
         double intensity = 0;
@@ -40,9 +39,11 @@ vector<direction> calibrate(const vector<matrix<double> > &imgs, const &matrix<d
         }
 
         double z = sqrt(pow(car.radius, 2) - pow(x - car.xCenter, 2) - pow(y - car.yCenter, 2));
-        double norm2 = 
-        direction normal()
+        //double norm2 =
+        //direction normal()
     }
+    std::cout << "Implement me, sempai!" << std::endl;
+    assert(false);
 }
 
 #endif //METNUM_TP1_CALIBRATION_H

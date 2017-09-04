@@ -45,10 +45,12 @@ TEST(MatrixTest, dotProduct) {
 
     ASSERT_EQ(Matrix::dotProduct(a, b), expected);
 
-    ASSERT_EQ(Matrix::dotProduct(a, Matrix::identityMatrix(3)), a);
-    ASSERT_EQ(Matrix::dotProduct(b, Matrix::identityMatrix(3)), b);
-    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), a), a);
-    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), b), b);
+    matrix<int> i3(Matrix::identityMatrix<int>(3));
+
+    ASSERT_EQ(Matrix::dotProduct(a, i3), a);
+    ASSERT_EQ(Matrix::dotProduct(b, i3), b);
+    ASSERT_EQ(Matrix::dotProduct(i3, a), a);
+    ASSERT_EQ(Matrix::dotProduct(i3, b), b);
 
 
     a = {{2, 5, 1},
@@ -205,7 +207,7 @@ TEST(MatrixTest, solveLowerTriangularSquaredSystem) {
         ASSERT_NEAR(expected[i], result[i], 0.0000001) << "i=" << i;
     }
 
-    matrix<int> C = Matrix::identityMatrix(5);
+    matrix<int> C(Matrix::identityMatrix<int>(5));
     row<int> d = { 13, 15, 17, 18, 19};
     row<int> expected_2 = d;
     row<int> result_2 = Matrix::solveLowerTriangularSquaredSystem(C, d);
@@ -243,7 +245,7 @@ TEST(MatrixTest, solveUpperTriangularSquaredSystem) {
         ASSERT_NEAR(expected[i], result[i], 0.0000001) << "i=" << i;
     }
 
-    matrix<int> C = Matrix::identityMatrix(5);
+    matrix<int> C(Matrix::identityMatrix<int>(5));
     row<int> d = { 19, 18, 17, 15, 13 };
     row<int> expected_2 = d;
     row<int> result_2 = Matrix::solveUpperTriangularSquaredSystem(C, d);

@@ -11,6 +11,5 @@ namespace Matrix {
             mx.push_back(r);
         }
         return mx;
-
     }
 }

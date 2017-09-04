@@ -11,7 +11,7 @@
  * @param factorized lower triangular matrix aka L
  */
 template <typename T>
-matrix<T> cholesky_factorization(matrix<T> &mx) {
+matrix<T> cholesky_factorization(const matrix<T>& mx) {
     assert(Matrix::isSymmetric(mx));
     size_t n = mx.size();
 

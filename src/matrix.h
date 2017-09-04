@@ -279,8 +279,18 @@ namespace Matrix {
         return x;
     }
 
-    matrix<int> identityMatrix(int size);
-
+    template<typename T>
+    matrix<T> identityMatrix(int size) {
+        matrix<T> mx;
+        for (int i = 0; i < size; ++i) {
+            row<int> r;
+            for (int j = 0; j < size; ++j) {
+                r.push_back(T((i == j) ? 1 : 0));
+            }
+            mx.push_back(r);
+        }
+        return mx;
+    }
 }
 
 #endif //METNUM_TP1_MATRIX_H
