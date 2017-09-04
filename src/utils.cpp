@@ -54,6 +54,10 @@ namespace Utils {
 
     }
 
+    matrix<double> grayscalify(const matrix<RGBPixel>& img) {
+        return grayscalify(img, 0.333333333333333333333333, 0.333333333333333333333333, 0.333333333333333333333333);
+    }
+
     matrix<double> grayscalify(const matrix<RGBPixel>& img, double r, double g, double b) {
         matrix<double> result;
         size_t height = img.size(), width = img[0].size();

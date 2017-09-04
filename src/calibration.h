@@ -28,43 +28,41 @@ namespace Calibration {
     vector<direction> calibrate(const vector<matrix<double> > &imgs, const matrix<double> &mask) {
         assert(imgs.size() > 0);
 
-        Mask::circle car = Mask::get_center_and_radius(mask);
-
-        cout << "center: (" << car.xCenter << "," << car.yCenter << ")" << endl;
-        cout << "radius: " << car.radius << endl;
+        Mask::circle circ = Mask::get_center_and_radius(mask);
 
         vector<direction> directions;
         int width = Matrix::columns(imgs[0]);
         int height = Matrix::rows(imgs[0]);
         for (int k = 0; k < imgs.size(); k++) {
-            double x;
-            double y;
-            double intensity = 0;
+            double x(0);
+            double y(0);
+            double intensity(0);
             for (int i = 0; i < height; i++) {
                 for (int j = 0; j < width; j++) {
                     if (imgs[k][i][j] > intensity) {
                         intensity = imgs[k][i][j];
-                        x = j - width / 2;
-                        y = height / 2 - i;
+                        x = j;
+                        y = i;
                     }
                 }
             }
 
-            // cout << "intensity = " << intensity << endl;
-            // cout << "x = " << x << endl;
-            // cout << "y = " << y << endl;
+            // 1: image center
+            double z = sqrt(pow(circ.radius, 2) - pow(x - circ.xCenter, 2) - pow(y - circ.yCenter, 2));
+            x = x - width / 2;
+            y = height / 2 - y;
+            /*
+            // vs circle center
+            x = x - circ.xCenter;
+            y = circ.yCenter - y;
+            double z = sqrt(pow(circ.radius, 2) - pow(x, 2) - pow(y, 2));
+            */
 
-            double z = sqrt(pow(car.radius, 2) - pow(x - (car.xCenter - width / 2), 2) - pow(y - (height / 2 - car.yCenter), 2));
-            // cout << "z = " << z << endl;
-
-            double norm2 = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-            // cout << "norma: " << norm2 << endl;
-            direction normal(x / norm2, y / norm2, z / norm2);
-
-            // cout << "nx: " << normal.x << " ny: " << normal.y << " nz: " << normal.z << endl;
-            directions.push_back(direction(-normal.x, -normal.y, -normal.z));
+            // normalize
+            double norm = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
+            direction s(x / norm, y / norm, z / norm);
+            directions.push_back(s);
         }
-
         return directions;
     }
 }

@@ -9,13 +9,14 @@ using namespace std;
 namespace Mask {
     struct circle {
         circle(int x, int y, int r) : xCenter(x), yCenter(y), radius(r) {}
+
         int xCenter;
         int yCenter;
         int radius;
     };
 
-    template <typename T>
-    circle get_center_and_radius(const matrix<T>& mask) {
+    template<typename T>
+    circle get_center_and_radius(const matrix<T> &mask) {
         int leftColumn = Matrix::columns(mask) - 1;
         int rightColumn = 0;
         int upperRow = Matrix::rows(mask) - 1;
@@ -28,6 +29,7 @@ namespace Mask {
                     if (j > rightColumn) rightColumn = j;
                     if (i < upperRow) upperRow = i;
                     if (i > lowerRow) lowerRow = i;
+                }
             }
         }
 
@@ -46,22 +48,23 @@ namespace Mask {
  * @tparam matrix<T>
  * @param img the image matrix, mask the mask matrix
  */
-template <typename T>
-matrix<T> apply_mask(const matrix<T>& img, const matrix<T>& mask) {
-    assert(Matrix::rows(img) == Matrix::rows(mask) && Matrix::columns(img) == Matrix::columns(mask));
+    template<typename T>
+    matrix<T> apply_mask(const matrix<T> &img, const matrix<T> &mask) {
+        assert(Matrix::rows(img) == Matrix::rows(mask) && Matrix::columns(img) == Matrix::columns(mask));
 
-    int leftColumn = Matrix::columns(img) - 1;
-    int rightColumn = 0;
-    int upperRow = Matrix::rows(img) - 1;
-    int lowerRow = 0;
+        int leftColumn = Matrix::columns(img) - 1;
+        int rightColumn = 0;
+        int upperRow = Matrix::rows(img) - 1;
+        int lowerRow = 0;
 
-    for (int i = 0; i < Matrix::rows(img); i++) {
-        for (int j = 0; j < Matrix::columns(img); j++) {
-            if (mask[i][j] > 250) {
-                if (j < leftColumn) leftColumn = j;
-                if (j > rightColumn) rightColumn = j;
-                if (i < upperRow) upperRow = i;
-                if (i > lowerRow) lowerRow = i;
+        for (int i = 0; i < Matrix::rows(img); i++) {
+            for (int j = 0; j < Matrix::columns(img); j++) {
+                if (mask[i][j] > 250) {
+                    if (j < leftColumn) leftColumn = j;
+                    if (j > rightColumn) rightColumn = j;
+                    if (i < upperRow) upperRow = i;
+                    if (i > lowerRow) lowerRow = i;
+                }
             }
         }
 
@@ -80,5 +83,4 @@ matrix<T> apply_mask(const matrix<T>& img, const matrix<T>& mask) {
         return result;
     }
 }
-
 #endif //METNUM_TP1_MASK_H
