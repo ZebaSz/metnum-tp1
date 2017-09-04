@@ -45,10 +45,12 @@ TEST(MatrixTest, dotProduct) {
 
     ASSERT_EQ(Matrix::dotProduct(a, b), expected);
 
-    ASSERT_EQ(Matrix::dotProduct(a, Matrix::identityMatrix(3)), a);
-    ASSERT_EQ(Matrix::dotProduct(b, Matrix::identityMatrix(3)), b);
-    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), a), a);
-    ASSERT_EQ(Matrix::dotProduct(Matrix::identityMatrix(3), b), b);
+    matrix<int> i3(Matrix::identityMatrix<int>(3));
+
+    ASSERT_EQ(Matrix::dotProduct(a, i3), a);
+    ASSERT_EQ(Matrix::dotProduct(b, i3), b);
+    ASSERT_EQ(Matrix::dotProduct(i3, a), a);
+    ASSERT_EQ(Matrix::dotProduct(i3, b), b);
 
 
     a = {{2, 5, 1},
@@ -123,6 +125,44 @@ TEST(MatrixTest, traspose){
     }
 }
 
+TEST(MatrixTest, isLowerTriangular) {
+    int size = 5;
+    int value = 1;
+    int** arr = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<int> A = Matrix::fromArr(arr, size, size);
+    assert(Matrix::isLowerTriangular(A));
+}
+
+TEST(MatrixTest, isUpperTriangular) {
+    int size = 5;
+    int value = 1;
+    int** arr = new int*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new int[size];
+        for (int j = 0; j < size; ++j) {
+            if (j >= i) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<int> A = Matrix::fromArr(arr, size, size);
+    assert(Matrix::isUpperTriangular(A));
+}
+
 TEST(MatrixTest, trasposeProduct) {
     int size = 5;
     int value = 1;
@@ -144,9 +184,13 @@ TEST(MatrixTest, solveLowerTriangularSquaredSystem) {
     double** arr = new double*[size];
     for (int i = 0; i < size; ++i) {
         arr[i] = new double[size];
-        for (int j = 0; j < i+1; ++j) {
-            arr[i][j] = value;
-            value++;
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
         }
     }
     matrix<double> A = Matrix::fromArr(arr, size, size);
@@ -162,4 +206,120 @@ TEST(MatrixTest, solveLowerTriangularSquaredSystem) {
     for (size_t i = 0; i < expected.size(); ++i) {
         ASSERT_NEAR(expected[i], result[i], 0.0000001) << "i=" << i;
     }
+
+    matrix<int> C(Matrix::identityMatrix<int>(5));
+    row<int> d = { 13, 15, 17, 18, 19};
+    row<int> expected_2 = d;
+    row<int> result_2 = Matrix::solveLowerTriangularSquaredSystem(C, d);
+    for (size_t i = 0; i < expected_2.size(); ++i) {
+        ASSERT_EQ(expected_2[i], result_2[i]) << "i=" << i;
+    }
+}
+
+TEST(MatrixTest, solveUpperTriangularSquaredSystem) {
+    int size = 5;
+    double value = 1;
+    double** arr = new double*[size];
+    for (int i = size-1; i >= 0; --i) {
+        arr[i] = new double[size];
+        for (int j = size-1; j >= 0; --j) {
+            if ( j >= i) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<double> A = Matrix::fromArr(arr, size, size);
+    row<double> b = { 55, 45, 35, 25, 15 };
+    double expected0 = 15;
+    double expected1 = (25 - (expected0*2))/3;
+    double expected2 = (35 - (expected0*4) - (expected1*5))/6;
+    double expected3 = (45 - (expected0*7) - (expected1*8) - (expected2*9))/10;
+    double expected4 = (55 - (expected0*11) - (expected1*12) - (expected2*13) - (expected3*14))/15;
+
+    row<double> expected = { expected4, expected3, expected2, expected1,  expected0 };
+    row<double> result = Matrix::solveUpperTriangularSquaredSystem(A, b);
+    for (size_t i = 0; i < expected.size(); ++i) {
+        ASSERT_NEAR(expected[i], result[i], 0.0000001) << "i=" << i;
+    }
+
+    matrix<int> C(Matrix::identityMatrix<int>(5));
+    row<int> d = { 19, 18, 17, 15, 13 };
+    row<int> expected_2 = d;
+    row<int> result_2 = Matrix::solveUpperTriangularSquaredSystem(C, d);
+    for (size_t i = 0; i < expected_2.size(); ++i) {
+        ASSERT_EQ(expected_2[i], result_2[i]) << "i=" << i;
+    }
+}
+
+TEST(MatrixTest, solveLUSystem){
+    int size = 5;
+    double value = 1;
+
+    double** arr = new double*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new double[size];
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<double> L = Matrix::fromArr(arr, size, size);
+
+    double** arr2 = new double*[size];
+    for (int i = size-1; i >= 0; --i) {
+        arr2[i] = new double[size];
+        for (int j = size-1; j >= 0; --j) {
+            if ( j >= i) {
+                arr2[i][j] = value;
+                value++;
+            } else {
+                arr2[i][j] = 0;
+            }
+        }
+    }
+    matrix<double> U = Matrix::fromArr(arr2, size, size);
+
+    row<double> b = { 100, 200, 300, 400, 500 };
+    row<double> expected = { 3.34677, 0.77131, 0.00408, -0.10576, -0.77037 };
+
+    row<double> result = Matrix::solveLUSystem(L,U,b);
+
+    for (int k = 0; k < 5; ++k) {
+        ASSERT_NEAR(expected[k], result[k], 0.1);
+    }
+}
+
+TEST(MatrixTest, solveCholeskySystem){
+    int size = 5;
+    double value = 1;
+
+    double** arr = new double*[size];
+    for (int i = 0; i < size; ++i) {
+        arr[i] = new double[size];
+        for (int j = 0; j < size; ++j) {
+            if (j < i+1) {
+                arr[i][j] = value;
+                value++;
+            } else {
+                arr[i][j] = 0;
+            }
+        }
+    }
+    matrix<double> L = Matrix::fromArr(arr, size, size);
+
+    row<double> b = { 1, 2, 4, 6, 105 };
+
+    row<double> result = Matrix::solveCholeskySystem(L,b);
+
+    matrix<double> trasposedL = Matrix::traspose(L);
+
+    row<double> result_with_trasposed = Matrix::solveLUSystem(L,trasposedL,b);
+    ASSERT_EQ(result_with_trasposed, result);
 }

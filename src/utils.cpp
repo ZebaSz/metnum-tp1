@@ -3,11 +3,9 @@
 #include <iostream>
 #include "utils.h"
 
-using namespace std;
-
 namespace Utils {
 
-    matrix<RGBPixel> loadImage(string filename) {
+    matrix<RGBPixel> loadImage(const std::string& filename) {
         matrix<RGBPixel> result;
         uchar* data = NULL;
         int width = 0, height = 0;
@@ -33,7 +31,7 @@ namespace Utils {
         return result;
     }
 
-    void saveGrayScaleImage(matrix<double> img, string dst) {
+    void saveGrayScaleImage(const matrix<double>& img, const std::string& dst) {
         size_t height = img.size(), width = img[0].size();
         int h = (int) height, w = (int) width;
         uchar* out = new uchar[height * width];
@@ -56,7 +54,11 @@ namespace Utils {
 
     }
 
-    matrix<double> grayscalify(matrix<RGBPixel> img, double r, double g, double b) {
+    matrix<double> grayscalify(const matrix<RGBPixel>& img) {
+        return grayscalify(img, 0.333333333333333333333333, 0.333333333333333333333333, 0.333333333333333333333333);
+    }
+
+    matrix<double> grayscalify(const matrix<RGBPixel>& img, double r, double g, double b) {
         matrix<double> result;
         size_t height = img.size(), width = img[0].size();
         for (size_t i = 0; i < height; i++) {

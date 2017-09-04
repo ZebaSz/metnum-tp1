@@ -1,14 +1,8 @@
 #include <iostream>
 #include "utils.h"
-
-using namespace std;
+#include "calibration.h"
 
 int main() {
-    string filename;
-    cout << "Ingresa la imagen a grayscalear" << endl;
-    cin >> filename;
-    Utils::saveGrayScaleImage(Utils::grayscalify(Utils::loadImage(filename), 0.25, 0.5, 0.25), "out_"+filename);
-    cout << "Grayscaled:" << "out_"+filename << endl;
-
+    std::cout << "tu vieja, auxilio" << std::endl;
     return 0;
 }

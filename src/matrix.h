@@ -153,6 +153,40 @@ namespace Matrix {
     }
 
     template<typename T>
+    bool isLowerTriangular(const matrix<T> &m) {
+        size_t n = m.size();
+        for (size_t i = 0; i < n; ++i) {
+            size_t mDimension = m[i].size();
+            if (n != mDimension) {
+                return false;
+            }
+            for (size_t j = i+1; j < mDimension; ++j) {
+                if (m[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    template<typename T>
+    bool isUpperTriangular(const matrix<T> &m) {
+        size_t n = m.size();
+        for (size_t i = 0; i < n; ++i) {
+            size_t mDimension = m[i].size();
+            if (n != mDimension) {
+                return false;
+            }
+            for (size_t j = 0; j < i; ++j) {
+                if (m[i][j] != 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    template<typename T>
     bool isSymmetric(const matrix<T> &m) {
         assert(isSquared(m));
 
@@ -168,18 +202,21 @@ namespace Matrix {
     }
 
 
-    // This should solve Ax=b and return x
+    // This should solve Ax=b and return x for lower triangular squared systems
     template<typename T>
-    row<T> solveLowerTriangularSquaredSystem(matrix<T> A, row<T> b){
-        assert(isSquared(A));
+    row<T> solveLowerTriangularSquaredSystem(const matrix<T> &A, const row<T> &b){
+        assert(isLowerTriangular(A));
 
         size_t solution_size = A.size();
         row<T> solution(solution_size, 0);
-        for (int i = 0; i < solution_size; ++i) {
+        for (size_t i = 0; i < solution_size; ++i) {
             T sumOfRowI = 0;
-            for (int j = 0; j < i; ++j) {
-                //TODO: Kahan
-                sumOfRowI += (A[i][j] * solution[j]);
+            T c = 0.0;
+            for (size_t j = 0; j < i; ++j) {
+                T y = (A[i][j] * solution[j])-c;
+                T t = sumOfRowI + y;
+                c = (t - sumOfRowI) - y;
+                sumOfRowI = t;
             }
             solution[i] = (b[i] - sumOfRowI) / A[i][i];
         }
@@ -187,8 +224,73 @@ namespace Matrix {
         return solution;
     }
 
-    matrix<int> identityMatrix(int size);
+    // This should solve Ax=b and return x for upper triangular squared systems
+    template<typename T>
+    row<T> solveUpperTriangularSquaredSystem(const matrix<T> &A, const row<T> &b){
+        assert(isUpperTriangular(A));
 
+        size_t solution_size = A.size();
+        row<T> solution(solution_size, 0);
+        for (int i = solution_size-1; i >= 0; --i) {
+            T sumOfRowI = 0;
+            T c = 0.0;
+            for (int j = solution_size-1; j > i; --j) {
+                T y = (A[i][j] * solution[j])-c;
+                T t = sumOfRowI + y;
+                c = (t - sumOfRowI) - y;
+                sumOfRowI = t;
+            }
+            solution[i] = (b[i] - sumOfRowI) / A[i][i];
+        }
+
+        return solution;
+    }
+
+    /*
+     * This should solve LUx=b and return x for LU systems
+     * LUx = b
+     * 1) Ly = b
+     * 2) Ux = y
+     */
+    template<typename T>
+    row<T> solveLUSystem(const matrix<T> &L, const matrix<T> &U, const row<T> &b){
+
+        row<T> y = solveLowerTriangularSquaredSystem(L, b);
+        row<T> x = solveUpperTriangularSquaredSystem(U, y);
+
+        return x;
+    }
+
+    /*
+     * This should solve LL*x=b and return x for Cholesky systems
+     * LL*x = b
+     * 1) Ly = b
+     * 2) L*x = y
+     *
+     */
+    template<typename T>
+    row<T> solveCholeskySystem(const matrix<T> &L, const row<T> &b){
+
+        row<T> y = solveLowerTriangularSquaredSystem(L, b);
+
+        matrix<T> trasposedL = traspose(L);
+        row<T> x = solveUpperTriangularSquaredSystem(trasposedL, y);
+
+        return x;
+    }
+
+    template<typename T>
+    matrix<T> identityMatrix(int size) {
+        matrix<T> mx;
+        for (int i = 0; i < size; ++i) {
+            row<int> r;
+            for (int j = 0; j < size; ++j) {
+                r.push_back(T((i == j) ? 1 : 0));
+            }
+            mx.push_back(r);
+        }
+        return mx;
+    }
 }
 
 #endif //METNUM_TP1_MATRIX_H

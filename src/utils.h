@@ -5,8 +5,6 @@
 #include "matrix.h"
 #include "ppmloader/ppmloader.h"
 
-using namespace std;
-
 struct RGBPixel {
     RGBPixel(unsigned int r, unsigned int g, unsigned int b) : r(r), g(g), b(b) {}
 
@@ -18,9 +16,10 @@ struct RGBPixel {
 
 namespace Utils {
 
-    matrix<RGBPixel> loadImage(string filename);
-    void saveGrayScaleImage(matrix<double> img, string dst);
-    matrix<double> grayscalify(matrix<RGBPixel> img, double r, double g, double b);
+    matrix<RGBPixel> loadImage(const std::string& filename);
+    void saveGrayScaleImage(const matrix<double>& img, const std::string& dst);
+    matrix<double> grayscalify(const matrix<RGBPixel>& img);
+    matrix<double> grayscalify(const matrix<RGBPixel>& img, double r, double g, double b);
 
 }
 
