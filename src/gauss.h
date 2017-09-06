@@ -26,15 +26,16 @@ void subtract_rows(row<T>& a, const row<T>& b, double multiplier);
  * @return whether such a row was found
  */
 template <typename T>
-bool find_swap_rows(matrix<T>& m, size_t col);
+size_t find_swap_rows(matrix<T>& m, size_t col);
 
 template <typename T>
 void gaussian_elimination(matrix<T> &mx) {
     for (size_t i = 0; i < mx.size() - 1; ++i) {
-        if(find_swap_rows(mx, i)) {
-            for (size_t j = i + 1; j < mx.size(); ++j) {
-                double x = (double) mx[j][i] / mx[i][i];
-                subtract_rows(mx[j], mx[i], x);
+        find_swap_rows(mx, i);
+        for (size_t j = i + 1; j < mx.size(); ++j) {
+            mx[j][i] /= mx[i][i];
+            for (size_t k = i + 1; k < mx.size(); k++) {
+                mx[j][k] -= mx[j][i] * mx[i][k];
             }
         }
     }
@@ -48,16 +49,17 @@ void subtract_rows(row<T>& a, const row<T>& b, double multiplier) {
 }
 
 template<typename T>
-bool find_swap_rows(matrix<T>& m, size_t col) {
-    for (size_t i = col; i < m.size(); ++i) {
-        if(m[i][col] != 0) {
-            if(i != col) {
-                std::swap(m[col], m[i]);
-            }
-            return true;
+size_t find_swap_rows(matrix<T>& m, size_t col) {
+    size_t max = col;
+    for (size_t i = col + 1; i < m.size(); ++i) {
+        if(m[i][col] > m[max][col]) {
+            max = i;
         }
     }
-    return false;
+    if(max != col) {
+        std::swap(m[col], m[max]);
+    }
+    return max;
 }
 
 #endif //METNUM_TP1_GAUSS_H
