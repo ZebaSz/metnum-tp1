@@ -8,8 +8,8 @@ struct PLUMatrix {
     PLUMatrix( matrix<T> P , matrix<T> L, matrix<T> U) : P(P), L(L), U(U) {}
     PLUMatrix(size_t matrixSize) {
         P = Matrix::identityMatrix((int) matrixSize);
-        L = Matrix::identityMatrix((int) matrixSize);
-        U = Matrix::identityMatrix((int) matrixSize);
+        L = Matrix::zeroMatrix((int) matrixSize);
+        U = Matrix::zeroMatrix((int) matrixSize);
     };
 
     matrix<T> P;
@@ -52,6 +52,7 @@ PLUMatrix<T> gaussian_elimination(const matrix<T> &original_matrix) {
         if (destinationRow != i) {
             matrix<T> identity(Matrix::identityMatrix((int) mx.size()));
             Matrix::swap_rows(identity, i,destinationRow);
+            Matrix::swap_rows(plu.L, i,destinationRow);
             plu.P = Matrix::dotProduct(identity, plu.P);
         }
         if (mx[i][i] != 0) {
@@ -63,6 +64,7 @@ PLUMatrix<T> gaussian_elimination(const matrix<T> &original_matrix) {
             }
         }
     }
+    plu.L = Matrix::sum(plu.L, Matrix::identityMatrix((int) plu.L.size()));
     plu.U = mx;
     return plu;
 }

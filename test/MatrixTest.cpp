@@ -64,6 +64,26 @@ TEST(MatrixTest, dotProduct) {
     ASSERT_EQ(Matrix::dotProduct(a, b), expected);
 }
 
+TEST(MatrixTest, sum) {
+    matrix<int> a = {
+            {2, 0, 1},
+            {3, 0, 0},
+            {5, 1, 1}};
+
+    matrix<int> b = {
+            {1, 0, 1},
+            {1, 2, 1},
+            {1, 1, 0}};
+
+    matrix<int> expected = {{3, 0, 2},
+                            {4, 2, 1},
+                            {6, 2, 1}};
+
+    matrix<int> result = Matrix::sum(a, b);
+
+    ASSERT_EQ(result, expected);
+}
+
 TEST(MatrixTest, norm){
     int size = 5;
     int value = 1;

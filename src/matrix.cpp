@@ -13,4 +13,10 @@ namespace Matrix {
         return mx;
 
     }
+
+    matrix<int> zeroMatrix(int size) {
+        matrix<int> mx(size, row<int>(size, 0));
+        return mx;
+
+    }
 }

@@ -62,6 +62,27 @@ namespace Matrix {
     }
 
     template<typename T>
+    matrix<T> sum(const matrix<T> &a, const matrix<T> &b) {
+        assert(!a.empty());
+        assert(!b.empty());
+        assert(!a[0].empty());
+        assert(!b[0].empty());
+        assert(a[0].size() == b[0].size());
+        assert(a.size() == b.size());
+
+        size_t rows = a.size(), columns = a[0].size();
+        matrix<T> result(rows, row<T>(columns, 0));
+
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < columns; ++j) {
+                result[i][j] = a[i][j] + b[i][j];
+            }
+        }
+
+        return result;
+    }
+
+    template<typename T>
     matrix<T> traspose(const matrix<T> &m) {
         assert(!(m.empty() || m[0].empty()));
         matrix<T> result(m[0].size(), row<T>(m.size(), 0));
@@ -218,6 +239,7 @@ namespace Matrix {
     }
 
     matrix<int> identityMatrix(int size);
+    matrix<int> zeroMatrix(int size);
 
 }
 
