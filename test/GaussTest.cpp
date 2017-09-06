@@ -9,10 +9,10 @@ TEST(GaussTest, lower_triangle) {
             m[i][j] = 1;
         }
     }
-    gaussian_elimination(m);
+    PLUMatrix<int> plu = gaussian_elimination(m);
     for (size_t i = 0; i < m.size(); ++i) {
         for (size_t j = 0; j < m[i].size(); ++j) {
-            ASSERT_EQ(m[i][j], i == j ? 1 : 0) << "i=" << i << ",j=" << j;
+            ASSERT_EQ(plu.U[i][j], i == j ? 1 : 0) << "i=" << i << ",j=" << j;
         }
     }
 }
@@ -33,7 +33,7 @@ TEST(GaussTest, lower_triangle_with_gap) {
     // [0, 0, 0, 0, 0]
     // [1, 1, 1, 1, 0]
     // [1, 1, 1, 1, 1]
-    gaussian_elimination(m);
+    PLUMatrix<int> plu = gaussian_elimination(m);
 
     // Expected output matrix:
     // [1, 0, 0, 0, 0]
@@ -44,12 +44,13 @@ TEST(GaussTest, lower_triangle_with_gap) {
     for (size_t i = 0; i < m.size(); ++i) {
         for (size_t j = 0; j < m[i].size(); ++j) {
             if((i == j && i < 3) || (i == 2 && j == 3) || (i == 4 && j == 4)) {
-                ASSERT_EQ(m[i][j], 1) << "i=" << i << ",j=" << j;
+                ASSERT_EQ(plu.U[i][j], 1) << "i=" << i << ",j=" << j;
             } else {
-                ASSERT_EQ(m[i][j], 0) << "i=" << i << ",j=" << j;
+                ASSERT_EQ(plu.U[i][j], 0) << "i=" << i << ",j=" << j;
             }
         }
     }
+    ASSERT_EQ(Matrix::dotProduct(plu.P,m), Matrix::dotProduct(plu.L, plu.U));
 }
 
 TEST(GaussTest, disordred) {
@@ -59,7 +60,7 @@ TEST(GaussTest, disordred) {
     arr[2] = new int[3]{0,1,0};
 
     matrix<int> m = Matrix::fromArr(arr, 3, 3);
-    gaussian_elimination(m);
+    PLUMatrix<int> plu = gaussian_elimination(m);
 
     for (int i = 0; i < 3; ++i) {
         delete[] arr[i];
@@ -67,7 +68,8 @@ TEST(GaussTest, disordred) {
     arr[0] = new int[3]{1,0,0};
     arr[1] = new int[3]{0,1,2};
     arr[2] = new int[3]{0,0,-2};
-    ASSERT_EQ(Matrix::fromArr(arr, 3, 3), m);
+    ASSERT_EQ(Matrix::fromArr(arr, 3, 3), plu.U);
+    ASSERT_EQ(Matrix::dotProduct(plu.P,m), Matrix::dotProduct(plu.L, plu.U));
 
     for (int i = 0; i < 3; ++i) {
         delete[] arr[i];

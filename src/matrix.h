@@ -213,9 +213,10 @@ namespace Matrix {
     }
 
     template<typename T>
-    void swap_rows(matrix<T> mx, size_t origin, size_t destination) {
+    void swap_rows(matrix<T> &mx, const size_t origin, const size_t destination) {
         std::swap(mx[origin], mx[destination]);
     }
+
     matrix<int> identityMatrix(int size);
 
 }

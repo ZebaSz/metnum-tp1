@@ -27,7 +27,7 @@ struct PLUMatrix {
  * @param mx the matrix
  */
 template <typename T>
-PLUMatrix<T> gaussian_elimination(matrix<T> &mx);
+PLUMatrix<T> gaussian_elimination(const matrix<T> &mx);
 
 template <typename T>
 void subtract_rows(row<T>& a, const row<T>& b, double multiplier);
@@ -44,18 +44,21 @@ template <typename T>
 size_t find_swap_rows(matrix<T>& m, size_t col);
 
 template <typename T>
-PLUMatrix<T> gaussian_elimination(matrix<T> &mx) {
-    PLUMatrix<T> plu(mx.size());
+PLUMatrix<T> gaussian_elimination(const matrix<T> &original_matrix) {
+    matrix<T> mx = original_matrix;
+    PLUMatrix<T> plu((int) mx.size());
     for (size_t i = 0; i < mx.size() - 1; ++i) {
         size_t destinationRow = find_swap_rows(mx, i); //this should be done only if mx[i][i] is zero?
         if (destinationRow != i) {
-            Matrix::swap_rows(plu.P, i,destinationRow);
+            matrix<T> identity(Matrix::identityMatrix((int) mx.size()));
+            Matrix::swap_rows(identity, i,destinationRow);
+            plu.P = Matrix::dotProduct(identity, plu.P);
         }
         if (mx[i][i] != 0) {
-            for (size_t j = i + 1; j < mx.size(); ++j) {
-                plu.L[j][i] = -(mx[j][i] / mx[i][i]);
+            for (size_t j = i+1; j < mx.size(); ++j) {
+                plu.L[j][i] = (mx[j][i] / mx[i][i]);
                 for (size_t k = 0; k < mx.size(); k++) {
-                    mx[j][k] += plu.L[j][i] * mx[i][k];
+                    mx[j][k] -= plu.L[j][i] * mx[i][k];
                 }
             }
         }
