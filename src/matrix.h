@@ -62,6 +62,25 @@ namespace Matrix {
     }
 
     template<typename T>
+    row<T> dotProductWithVector(const matrix<T> &a, const row<T> &b) {
+        assert(!a.empty());
+        assert(!b.empty());
+        assert(!a[0].empty());
+        assert(a[0].size() == b.size());
+
+        size_t rows = a.size(), columns = a[0].size();
+        row<T> result(rows, 0);
+
+        for (size_t i = 0; i < rows; ++i) {
+            for (size_t j = 0; j < columns; ++j) {
+                result[i] += a[i][j] * b[j];
+            }
+        }
+
+        return result;
+    }
+
+    template<typename T>
     matrix<T> sum(const matrix<T> &a, const matrix<T> &b) {
         assert(!a.empty());
         assert(!b.empty());
@@ -278,6 +297,24 @@ namespace Matrix {
 
         row<T> y = solveLowerTriangularSquaredSystem(L, b);
         row<T> x = solveUpperTriangularSquaredSystem(U, y);
+
+        return x;
+    }
+
+    /*
+     * This should solve PLUx=b and return x for PLU systems
+     * LUx = (P**-1) b
+     * 1) Ly = (P**-1) b
+     * 2) Ux = y
+     */
+    template<typename T>
+    row<T> solvePLUSystem(const matrix<T> &P, const matrix<T> &L, const matrix<T> &U, const row<T> &b){
+
+        matrix<T> inverseP = traspose(P);
+
+        row<T> permutedB = dotProductWithVector(inverseP, b);
+
+        row<T> x = solveLUSystem(L,U,permutedB);
 
         return x;
     }

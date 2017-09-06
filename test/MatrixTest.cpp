@@ -316,6 +316,23 @@ TEST(MatrixTest, solveLUSystem){
     }
 }
 
+TEST(MatrixTest, solvePLUSystem) {
+    int** arr = new int*[3];
+    arr[0] = new int[3]{0,1,2};
+    arr[1] = new int[3]{1,0,0};
+    arr[2] = new int[3]{0,1,0};
+
+    matrix<int> m = Matrix::fromArr(arr, 3, 3);
+    matrix<int> u = {{1,0,0},{0,1,2},{0,0,-2}};
+    matrix<int> l = {{1,0,0},{0,1,0},{0,1,1}};
+    matrix<int> p = {{0,1,0},{1,0,0},{0,0,1}};
+
+    row<int> b = {1,2,3};
+    row<int> expected_x = {2,3,-1};
+
+    ASSERT_EQ(Matrix::solvePLUSystem(p,l,u,b), expected_x);
+}
+
 TEST(MatrixTest, solveCholeskySystem){
     int size = 5;
     double value = 1;
