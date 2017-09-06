@@ -6,11 +6,11 @@
 #include "matrix.h"
 #include "math.h"
 
-template <typename T>
+template<typename T>
 using row = std::vector<T>;
 
-template <typename T>
-using matrix = std::vector< row<T> >;
+template<typename T>
+using matrix = std::vector<row<T> >;
 
 typedef std::size_t size_t;
 
@@ -200,7 +200,7 @@ namespace Matrix {
             if (n != mDimension) {
                 return false;
             }
-            for (size_t j = i+1; j < mDimension; ++j) {
+            for (size_t j = i + 1; j < mDimension; ++j) {
                 if (m[i][j] != 0) {
                     return false;
                 }
@@ -244,7 +244,7 @@ namespace Matrix {
 
     // This should solve Ax=b and return x for lower triangular squared systems
     template<typename T>
-    row<T> solveLowerTriangularSquaredSystem(const matrix<T> &A, const row<T> &b){
+    row<T> solveLowerTriangularSquaredSystem(const matrix<T> &A, const row<T> &b) {
         assert(isLowerTriangular(A));
 
         size_t solution_size = A.size();
@@ -253,7 +253,7 @@ namespace Matrix {
             T sumOfRowI = 0;
             T c = 0.0;
             for (size_t j = 0; j < i; ++j) {
-                T y = (A[i][j] * solution[j])-c;
+                T y = (A[i][j] * solution[j]) - c;
                 T t = sumOfRowI + y;
                 c = (t - sumOfRowI) - y;
                 sumOfRowI = t;
@@ -266,16 +266,16 @@ namespace Matrix {
 
     // This should solve Ax=b and return x for upper triangular squared systems
     template<typename T>
-    row<T> solveUpperTriangularSquaredSystem(const matrix<T> &A, const row<T> &b){
+    row<T> solveUpperTriangularSquaredSystem(const matrix<T> &A, const row<T> &b) {
         assert(isUpperTriangular(A));
 
         size_t solution_size = A.size();
         row<T> solution(solution_size, 0);
-        for (int i = solution_size-1; i >= 0; --i) {
+        for (int i = solution_size - 1; i >= 0; --i) {
             T sumOfRowI = 0;
             T c = 0.0;
-            for (int j = solution_size-1; j > i; --j) {
-                T y = (A[i][j] * solution[j])-c;
+            for (int j = solution_size - 1; j > i; --j) {
+                T y = (A[i][j] * solution[j]) - c;
                 T t = sumOfRowI + y;
                 c = (t - sumOfRowI) - y;
                 sumOfRowI = t;
@@ -293,7 +293,7 @@ namespace Matrix {
      * 2) Ux = y
      */
     template<typename T>
-    row<T> solveLUSystem(const matrix<T> &L, const matrix<T> &U, const row<T> &b){
+    row<T> solveLUSystem(const matrix<T> &L, const matrix<T> &U, const row<T> &b) {
 
         row<T> y = solveLowerTriangularSquaredSystem(L, b);
         row<T> x = solveUpperTriangularSquaredSystem(U, y);
@@ -308,13 +308,13 @@ namespace Matrix {
      * 2) Ux = y
      */
     template<typename T>
-    row<T> solvePLUSystem(const matrix<T> &P, const matrix<T> &L, const matrix<T> &U, const row<T> &b){
+    row<T> solvePLUSystem(const matrix<T> &P, const matrix<T> &L, const matrix<T> &U, const row<T> &b) {
 
         matrix<T> inverseP = traspose(P);
 
         row<T> permutedB = dotProductWithVector(inverseP, b);
 
-        row<T> x = solveLUSystem(L,U,permutedB);
+        row<T> x = solveLUSystem(L, U, permutedB);
 
         return x;
     }
@@ -327,7 +327,7 @@ namespace Matrix {
      *
      */
     template<typename T>
-    row<T> solveCholeskySystem(const matrix<T> &L, const row<T> &b){
+    row<T> solveCholeskySystem(const matrix<T> &L, const row<T> &b) {
 
         row<T> y = solveLowerTriangularSquaredSystem(L, b);
         matrix<T> trasposedL = traspose(L);

@@ -5,6 +5,7 @@
 
 template <typename T>
 struct PLUMatrix {
+
     PLUMatrix( matrix<T> P , matrix<T> L, matrix<T> U) : P(P), L(L), U(U) {}
     PLUMatrix(size_t matrixSize) {
         P = Matrix::identityMatrix<T>((int) matrixSize);
