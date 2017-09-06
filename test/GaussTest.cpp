@@ -43,10 +43,10 @@ TEST(GaussTest, lower_triangle_with_gap) {
     // [0, 0, 0, 0, 1]
     for (size_t i = 0; i < m.size(); ++i) {
         for (size_t j = 0; j < m[i].size(); ++j) {
-            if(!(i == gap_row && j == i + 1) && (i != j || i == gap_row + 1)) {
-                ASSERT_EQ(m[i][j], 0) << "i=" << i << ",j=" << j;
-            } else {
+            if((i == j && i < 3) || (i == 2 && j == 3) || (i == 4 && j == 4)) {
                 ASSERT_EQ(m[i][j], 1) << "i=" << i << ",j=" << j;
+            } else {
+                ASSERT_EQ(m[i][j], 0) << "i=" << i << ",j=" << j;
             }
         }
     }

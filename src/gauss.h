@@ -3,6 +3,21 @@
 
 #include "matrix.h"
 
+template <typename T>
+struct PLUMatrix {
+    PLUMatrix( matrix<T> P , matrix<T> L, matrix<T> U) : P(P), L(L), U(U) {}
+    PLUMatrix(size_t matrixSize) {
+        P = Matrix::identityMatrix((int) matrixSize);
+        L = Matrix::identityMatrix((int) matrixSize);
+        U = Matrix::identityMatrix((int) matrixSize);
+    };
+
+    matrix<T> P;
+    matrix<T> L;
+    matrix<T> U;
+
+};
+
 /**
  * Simplifies the provided matrix,
  * converting it into row echelon form if possible.
@@ -12,7 +27,7 @@
  * @param mx the matrix
  */
 template <typename T>
-void gaussian_elimination(matrix<T> &mx);
+PLUMatrix<T> gaussian_elimination(matrix<T> &mx);
 
 template <typename T>
 void subtract_rows(row<T>& a, const row<T>& b, double multiplier);
@@ -29,16 +44,24 @@ template <typename T>
 size_t find_swap_rows(matrix<T>& m, size_t col);
 
 template <typename T>
-void gaussian_elimination(matrix<T> &mx) {
+PLUMatrix<T> gaussian_elimination(matrix<T> &mx) {
+    PLUMatrix<T> plu(mx.size());
     for (size_t i = 0; i < mx.size() - 1; ++i) {
-        find_swap_rows(mx, i);
-        for (size_t j = i + 1; j < mx.size(); ++j) {
-            mx[j][i] /= mx[i][i];
-            for (size_t k = i + 1; k < mx.size(); k++) {
-                mx[j][k] -= mx[j][i] * mx[i][k];
+        size_t destinationRow = find_swap_rows(mx, i); //this should be done only if mx[i][i] is zero?
+        if (destinationRow != i) {
+            Matrix::swap_rows(plu.P, i,destinationRow);
+        }
+        if (mx[i][i] != 0) {
+            for (size_t j = i + 1; j < mx.size(); ++j) {
+                plu.L[j][i] = -(mx[j][i] / mx[i][i]);
+                for (size_t k = 0; k < mx.size(); k++) {
+                    mx[j][k] += plu.L[j][i] * mx[i][k];
+                }
             }
         }
     }
+    plu.U = mx;
+    return plu;
 }
 
 template <typename T>
@@ -52,7 +75,7 @@ template<typename T>
 size_t find_swap_rows(matrix<T>& m, size_t col) {
     size_t max = col;
     for (size_t i = col + 1; i < m.size(); ++i) {
-        if(m[i][col] > m[max][col]) {
+        if((m[i][col] > m[max][col] && m[i][col] != 0) || (m[max][col] == 0 && m[i][col] != 0)) {
             max = i;
         }
     }
