@@ -62,6 +62,31 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
     return normal;
 }
 
+matrix<double> calculateM(const matrix<row<double>> &n) {
+    size_t height = n.size(), width = n[0].size(), n_size = width * height;
+    matrix<double> M;
+    size_t n_i = 0;
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            row<double> r(n_i, 0);
+            r[n_i] = -n[y][x][2]; //le pongo -nz
+            r[n_i+1] = n[y][x][2]; //le pongo nz
+            n_i++;
+            M.push_back(r);
+        }
+    }
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            row<double> r(n_i, 0);
+            r[n_i] = -n[y][x][2]; //le pongo -nz
+            r[n_i+height] = n[y][x][2]; //le pongo nz
+            n_i++;
+            M.push_back(r);
+        }
+    }
+    return M;
+}
+
 //Aqui viene lo bueno jovenes, I cho cho choleskyou
 matrix<double> findDepth(const matrix<row<double>> &m) {
     assert(false);
