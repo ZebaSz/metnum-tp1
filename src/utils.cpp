@@ -81,7 +81,7 @@ namespace Utils {
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (j != 0 && j != width - 1) {
+                if (j != 0) {
                     fprintf(x, ",");
                     fprintf(y, ",");
                     fprintf(z, ",");
@@ -106,7 +106,7 @@ namespace Utils {
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (j != 0 && j != width - 1) {
+                if (j != 0) {
                     fprintf(f, ",");
                 }
                 fprintf(f, "%f", m[i][j]);

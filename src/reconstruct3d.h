@@ -13,9 +13,9 @@ struct options {
 
 matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, const direction &s3) {
     return {
-            {s1.x, s2.x, s3.x},
-            {s1.y, s2.y, s3.y},
-            {s1.z, s2.z, s3.z}
+            {s1.x, s1.y, s1.z},
+            {s2.x, s2.y, s2.z},
+            {s3.x, s3.y, s3.z}
     };
 }
 /**
