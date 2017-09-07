@@ -58,8 +58,11 @@ PLUMatrix<T> gaussian_elimination(const matrix<T> &original_matrix) {
         if (mx[i][i] != 0) {
             for (size_t j = i+1; j < mx.size(); ++j) {
                 plu.L[j][i] = (mx[j][i] / mx[i][i]);
+                mx[j][i] = 0;
                 for (size_t k = 0; k < mx.size(); k++) {
-                    mx[j][k] -= plu.L[j][i] * mx[i][k];
+                    if (k != i) {
+                        mx[j][k] -= plu.L[j][i] * mx[i][k];
+                    }
                 }
             }
         }

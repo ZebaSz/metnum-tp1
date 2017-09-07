@@ -87,5 +87,12 @@ TEST(GaussTest, floatValues) {
     PLUMatrix<double> plu = gaussian_elimination(mx);
     ASSERT_TRUE(Matrix::isUpperTriangular(plu.U));
     ASSERT_TRUE(Matrix::isLowerTriangular(plu.L));
-    ASSERT_EQ(Matrix::dotProduct(plu.P,mx), Matrix::dotProduct(plu.L, plu.U));
+    matrix<double> expected = Matrix::dotProduct(plu.P,mx);
+    matrix<double> result = Matrix::dotProduct(plu.L, plu.U);
+
+    for (int i = 0; i < expected.size(); ++i) {
+        for (int j = 0; j < expected[i].size(); ++j) {
+            ASSERT_NEAR(expected[i][j], result[i][j], 0.00000000000000002);
+        }
+    }
 }
