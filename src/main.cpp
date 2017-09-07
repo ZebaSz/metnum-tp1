@@ -2,10 +2,15 @@
 #include "utils.h"
 #include "reconstruct3d.h"
 
-using namespace std;
+#define PICTURE_NO(pic, n) pic + "." #n ".ppm"
+#define PICTURE_MASK(pic) pic ".mask.ppm"
 
-#define PICTURE_NO(pic,n) figure+"."+PICTURES[n]+".ppm"
-#define PICTURE_MASK(pic) pic+".mask.ppm"
+#define SPHERE "mate"
+#define FIGURE "caballo"
+
+#define SAVE_NORMAL true
+
+#define DEFAULT_OPTS options(false)
 
 void saveSampleNormalField() {
     matrix<double> i1 = Utils::loadGrayImage("mate.0.ppm");
@@ -20,13 +25,7 @@ void saveSampleNormalField() {
     Utils::saveMatrix3dFiles(res, "mate");
 }
 
-string SPHERE = "mate";
-string FIGURE = "caballo";
-string PICTURES[3] = {"0", "1", "2"};
-options OPTS = options(false);
-bool SAVE_NORMAL = true;
-
-vector<matrix<double>> loadGrayImages(string figure) {
+std::vector<matrix<double>> loadGrayImages(const std::string& figure) {
     return {
         Utils::loadGrayImage(PICTURE_NO(figure, 0)),
         Utils::loadGrayImage(PICTURE_NO(figure, 1)),
@@ -45,13 +44,13 @@ int main() {
     //----NORMAL-FIELD
     matrix<row<double>> normal = normalField(
             imgs[0], imgs[1], imgs[2],
-            calibrations[0], calibrations[1], calibrations[2], OPTS);
-    if (SAVE_NORMAL) {
+            calibrations[0], calibrations[1], calibrations[2], DEFAULT_OPTS);
+#if SAVE_NORMAL
         Utils::saveMatrix3dFiles(normal, FIGURE);
-    }
+#endif
     //----DEPTH
-    matrix<double> depth = findDepth(normal);
-    Utils::saveMatrixFile(depth, FIGURE + ".depth.csv");
+    //matrix<double> depth = findDepth(normal);
+    //Utils::saveMatrixFile(depth, FIGURE ".depth.csv");
     //----END
     return 0;
 }
