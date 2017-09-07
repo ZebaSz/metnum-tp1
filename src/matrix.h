@@ -167,6 +167,19 @@ namespace Matrix {
     }
 
     template<typename T>
+    T twoNorm(const row<T> &row) {
+        T result = 0;
+        T c = 0.0;
+        for (size_t j = 0; j < row.size(); ++j) {
+            // Super Kahan2!!
+            T y = pow(row[j], 2) - c;
+            T t = result + y;
+            c = (t - result) - y;
+            result = t;
+        }
+        return sqrt(result);
+    }
+    template<typename T>
     T singleNorm(const matrix<T> &matrix1) {
         T result = 0;
         for (size_t i = 0; i < matrix1.size(); ++i) {

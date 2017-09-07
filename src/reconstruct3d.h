@@ -49,7 +49,7 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
                 //(5)
                 row<double> m = Matrix::solvePLUSystem(sm.P, sm.L, sm.U, {i1[i][j], i2[i][j], i3[i][j]});
                 //(6)
-                double mNorm = Matrix::twoNorm({m});
+                double mNorm = Matrix::twoNorm(m);
                 m[0] /= mNorm;
                 m[1] /= mNorm;
                 m[2] /= mNorm;

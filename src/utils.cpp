@@ -71,6 +71,31 @@ namespace Utils {
         }
         return result;
     }
+
+    void saveMatrix3dFiles(const matrix<row<double>> &m, const std::string &dst) {
+        size_t height = m.size(), width = m[0].size();
+
+        FILE *x = fopen("mate_x.csv", "a");
+        FILE *y = fopen("mate_y.csv", "a");
+        FILE *z = fopen("mate_z.csv", "a");
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (j == 0 || j == width - 1) {
+                    fprintf(x, ",");
+                    fprintf(y, ",");
+                    fprintf(z, ",");
+                }
+                fprintf(x, "%f", m[i][j][0]);
+                fprintf(y, "%f", m[i][j][1]);
+                fprintf(z, "%f", m[i][j][2]);
+
+            }
+        }
+        fclose(x);
+        fclose(y);
+        fclose(z);
+    }
 }
 
 
