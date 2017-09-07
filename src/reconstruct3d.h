@@ -68,7 +68,7 @@ matrix<double> calculateM(const matrix<row<double>> &n) {
     size_t n_i = 0;
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            row<double> r(n_i, 0);
+            row<double> r(n_size, 0);
             r[n_i] = -n[y][x][2]; //le pongo -nz
             r[n_i+1] = n[y][x][2]; //le pongo nz
             n_i++;
@@ -77,7 +77,7 @@ matrix<double> calculateM(const matrix<row<double>> &n) {
     }
     for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
-            row<double> r(n_i, 0);
+            row<double> r(n_size, 0);
             r[n_i] = -n[y][x][2]; //le pongo -nz
             r[n_i+height] = n[y][x][2]; //le pongo nz
             n_i++;
@@ -85,6 +85,23 @@ matrix<double> calculateM(const matrix<row<double>> &n) {
         }
     }
     return M;
+}
+
+vector<double> calculateV(const matrix<row<double>> &n) {
+    size_t height = n.size(), width = n[0].size();
+    vector<double> v;
+    size_t n_i = 0;
+    for (size_t x = 0; x < width; x++) {
+        for (size_t y = 0; y < height; y++) {
+            v.push_back(-n[y][x][1]); //le pongo -ny
+        }
+    }
+    for (size_t y = 0; y < height; y++) {
+        for (size_t x = 0; x < width; x++) {
+            v.push_back(-n[y][x][0]); //le pongo -nx
+        }
+    }
+    return v;
 }
 
 //Aqui viene lo bueno jovenes, I cho cho choleskyou
