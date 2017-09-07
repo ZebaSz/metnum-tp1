@@ -21,6 +21,7 @@ namespace Utils {
     matrix<double> grayscalify(const matrix<RGBPixel>& img);
     matrix<double> grayscalify(const matrix<RGBPixel>& img, double r, double g, double b);
     void saveMatrix3dFiles(const matrix<row<double>>& img, const std::string& dst);
+    void saveMatrixFile(const matrix<double> &m, const std::string &dst);
 
 }
 

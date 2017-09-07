@@ -25,7 +25,7 @@ namespace Calibration {
      * @tparam vector<matrix<double>>
      * @param imgs the vector of matrixes of the images of the sphere
      */
-    vector<direction> calibrate(const vector<matrix<double> > &imgs, const matrix<double> &mask) {
+    vector<direction> calibrate(const vector<matrix<double>> &imgs, const matrix<double> &mask) {
         assert(imgs.size() > 0);
 
         Mask::circle circ = Mask::get_center_and_radius(mask);

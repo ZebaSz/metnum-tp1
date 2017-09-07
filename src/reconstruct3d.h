@@ -10,6 +10,7 @@ struct options {
     options(bool maskOptimization) : maskOptimization(maskOptimization) {}
     bool maskOptimization;
 };
+
 matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, const direction &s3) {
     return {
             {s1.x, s2.x, s3.x},
@@ -63,12 +64,11 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
 
 //Aqui viene lo bueno jovenes, I cho cho choleskyou
 matrix<double> findDepth(const matrix<row<double>> &m) {
+    assert(false);
     size_t height = m.size(), width = m[0].size();
     matrix<double> depth;
-
     //Aca hay que hacer lo que no se que hacer
     return depth;
 }
-
 
 #endif //METNUM_TP1_RECONSTRUCT3D_H

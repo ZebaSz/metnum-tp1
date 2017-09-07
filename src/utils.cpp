@@ -75,13 +75,13 @@ namespace Utils {
     void saveMatrix3dFiles(const matrix<row<double>> &m, const std::string &dst) {
         size_t height = m.size(), width = m[0].size();
 
-        FILE *x = fopen("mate_x.csv", "a");
-        FILE *y = fopen("mate_y.csv", "a");
-        FILE *z = fopen("mate_z.csv", "a");
+        FILE *x = fopen((dst+"_x.csv").c_str(), "w");
+        FILE *y = fopen((dst+"_y.csv").c_str(), "w");
+        FILE *z = fopen((dst+"_z.csv").c_str(), "w");
 
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                if (j == 0 || j == width - 1) {
+                if (j != 0 && j != width - 1) {
                     fprintf(x, ",");
                     fprintf(y, ",");
                     fprintf(z, ",");
@@ -89,12 +89,31 @@ namespace Utils {
                 fprintf(x, "%f", m[i][j][0]);
                 fprintf(y, "%f", m[i][j][1]);
                 fprintf(z, "%f", m[i][j][2]);
-
             }
+            fprintf(x, "\n");
+            fprintf(y, "\n");
+            fprintf(z, "\n");
         }
         fclose(x);
         fclose(y);
         fclose(z);
+    }
+
+    void saveMatrixFile(const matrix<double> &m, const std::string &dst) {
+        size_t height = m.size(), width = m[0].size();
+
+        FILE *f = fopen(dst.c_str(), "w");
+
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (j != 0 && j != width - 1) {
+                    fprintf(f, ",");
+                }
+                fprintf(f, "%f", m[i][j]);
+            }
+            fprintf(f, "\n");
+        }
+        fclose(f);
     }
 }
 
