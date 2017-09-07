@@ -67,7 +67,7 @@ matrix<double> findDepth(const matrix<row<double>> &m) {
     assert(false);
     size_t height = m.size(), width = m[0].size();
     matrix<double> depth;
-    //Aca hay que hacer lo que no se que hacer
+    // TODO: Aca hay que hacer lo que no se que hacer
     return depth;
 }
 

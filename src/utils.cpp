@@ -3,6 +3,10 @@
 #include <iostream>
 #include "utils.h"
 
+#define R_GRAYSCALE 0.25
+#define G_GRAYSCALE 0.5
+#define B_GRAYSCALE 0.25
+
 namespace Utils {
 
     matrix<RGBPixel> loadImage(const std::string& filename) {
@@ -51,11 +55,14 @@ namespace Utils {
         if (!ret) {
             throw std::runtime_error("Couldn't save Image to ppm file");
         }
+    }
 
+    matrix<double> loadGrayImage(const std::string& filename) {
+        return grayscalify(loadImage(filename));
     }
 
     matrix<double> grayscalify(const matrix<RGBPixel>& img) {
-        return grayscalify(img, 0.333333333333333333333333, 0.333333333333333333333333, 0.333333333333333333333333);
+        return grayscalify(img, R_GRAYSCALE, G_GRAYSCALE, B_GRAYSCALE);
     }
 
     matrix<double> grayscalify(const matrix<RGBPixel>& img, double r, double g, double b) {
@@ -79,8 +86,8 @@ namespace Utils {
         FILE *y = fopen((dst+"_y.csv").c_str(), "w");
         FILE *z = fopen((dst+"_z.csv").c_str(), "w");
 
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        for (size_t i = 0; i < height; i++) {
+            for (size_t j = 0; j < width; j++) {
                 if (j != 0) {
                     fprintf(x, ",");
                     fprintf(y, ",");
@@ -104,8 +111,8 @@ namespace Utils {
 
         FILE *f = fopen(dst.c_str(), "w");
 
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
+        for (size_t i = 0; i < height; i++) {
+            for (size_t j = 0; j < width; j++) {
                 if (j != 0) {
                     fprintf(f, ",");
                 }

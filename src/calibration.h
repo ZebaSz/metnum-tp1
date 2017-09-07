@@ -33,7 +33,7 @@ namespace Calibration {
         vector<direction> directions;
         int width = Matrix::columns(imgs[0]);
         int height = Matrix::rows(imgs[0]);
-        for (int k = 0; k < imgs.size(); k++) {
+        for (size_t k = 0; k < imgs.size(); k++) {
             double x(0);
             double y(0);
             double intensity(0);
