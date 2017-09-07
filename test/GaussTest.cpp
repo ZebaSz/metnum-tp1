@@ -76,3 +76,16 @@ TEST(GaussTest, disordred) {
     }
     delete[] arr;
 }
+
+TEST(GaussTest, floatValues) {
+    matrix<double> mx = {
+        {0.411900,  0.635012, 0.653528},
+        {0.063396,  0.253583, 0.965234},
+        {-0.108818, 0.527349, 0.842652}
+    };
+
+    PLUMatrix<double> plu = gaussian_elimination(mx);
+    ASSERT_TRUE(Matrix::isUpperTriangular(plu.U));
+    ASSERT_TRUE(Matrix::isLowerTriangular(plu.L));
+    ASSERT_EQ(Matrix::dotProduct(plu.P,mx), Matrix::dotProduct(plu.L, plu.U));
+}
