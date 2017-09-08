@@ -106,6 +106,7 @@ matrix<double> findDepth(const matrix<row<double>> &normalField) {
     sparse_matrix m = calculateM(normalField);
     sparse_matrix mt = m; mt.transponse();
     // TODO: Aca hay que calcular Mtraspuesta*M
+    sparse_matrix mtm(m.getRows(), m.getRows());
     // TODO: Aca hay que calcular Mtraspuesta*V
     // TODO: Aca hay que choleskiar Az=b
     matrix<double> d;
