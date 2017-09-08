@@ -42,3 +42,29 @@ permite, en los pasos siguientes del algoritmo de fotogrametría estéreo,
 poder calcular la normal para cada punto, basándose en que la fuente de
 iluminacion $s_i$ con $1 \leq i \leq 12$ es la misma para la imágen $i$ de
 cada objeto.
+
+\subsection{Reconstrucción del modelo 3D de los objetos digitalizados}
+
+Una vez completada la calibración, ya se cuenta con las direcciones de
+iluminación de cada caso, las cuales junto con la secuencia de imágenes de un
+objeto nos proporcionarán la información necesaria para poder calcular todos
+los puntos $(x,y,z)$ del modelo digitalizado y las normales de cada uno.
+
+Puede dividirse en:
+
+\begin{enumerate}
+\item Construcción del campo normal
+\item Estimación de la profundidad
+\end{enumerate}
+
+\subsubsection{Contrucción del campo normal}
+
+En este paso se desea obtener la normal de cada punto del objeto. Para ello
+se recurre a la ecuación 5 del enunciado de este trabajo práctico, que
+vincula una matriz formada por 3 direcciones de fuentes de iluminación con el
+vector $m$ y las intensidades del píxel en cada imágen. Esta matriz tiene 3 direcciones porque es la cantidad mínima de imágenes cuya fuente de iluminación difiera entre sí necesaria para inferir la orientación de la superficie.
+
+La matriz de
+direcciones contiene la dirección de cada fuente de iluminación dispuesta como fila.
+
+\subsubsection{Estimacion de la profundidad}
