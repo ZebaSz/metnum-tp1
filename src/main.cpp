@@ -90,8 +90,8 @@ int main(int argc, char** argv) {
         Utils::saveMatrix3dFiles(normal, outputName);
 #endif
     //----DEPTH
-    //matrix<double> depth = findDepth(normal);
-    //Utils::saveMatrixFile(depth, FIGURE ".depth.csv");
+    matrix<double> depth = findDepth(normal);
+    Utils::saveMatrixFile(depth, figureName + ".depth.csv");
     //----END
     return 0;
 }
