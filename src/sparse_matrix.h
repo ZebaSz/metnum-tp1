@@ -2,7 +2,7 @@
 #define METNUM_TP1_SPARSE_MATRIX_H
 
 #include <map>
-#include <algorithm>
+#include <vector>
 #include "matrix.h"
 
 using namespace std;
@@ -52,6 +52,17 @@ class sparse_matrix {
         void transponse() {
             trans = !trans;
         }
+
+        std::vector<std::pair<size_t, size_t>> notZeros() {
+            std::vector<std::pair<size_t, size_t>> nc;
+            for(auto x = matrix.begin(); x != matrix.end(); ++x) {
+                for(auto y = x->second.begin(); y != x->second.end(); ++y) {
+                    std::pair<size_t, size_t> pair = (trans) ? std::pair<size_t, size_t>(y->first, x->first) : std::pair<size_t, size_t>(x->first, y->first);
+                    nc.push_back(pair);
+                }
+            }
+            return nc;
+        };
 
     private:
         bool trans;

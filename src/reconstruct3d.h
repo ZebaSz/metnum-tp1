@@ -104,8 +104,11 @@ vector<double> calculateV(const matrix<row<double>> &n) {
 //Aqui viene lo bueno jovenes, I cho cho choleskyou
 matrix<double> findDepth(const matrix<row<double>> &normalField) {
     sparse_matrix m = calculateM(normalField);
+    sparse_matrix mt = m; mt.transponse();
+    // TODO: Aca hay que calcular Mtraspuesta*M
+    // TODO: Aca hay que calcular Mtraspuesta*V
+    // TODO: Aca hay que choleskiar Az=b
     matrix<double> d;
-    // TODO: Aca hay que hacer lo que no se que hacer
     return d;
 }
 
