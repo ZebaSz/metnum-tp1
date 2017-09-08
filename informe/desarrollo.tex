@@ -1,0 +1,44 @@
+\section{Desarrollo}
+
+\subsection{Calibración}
+
+El primer paso para comenzar el algoritmo de fotogrametría estéreo es realizar
+la calibración del sistema. Cada imágen tiene una fuente de iluminación. Cada
+fuente tiene una dirección en la que apunta su luz. El objetivo del paso de
+calibración es poder calcular la dirección de cada fuene de iluminación.
+
+Cada objeto tiene 12 imágenes del mismo con fuentes de iluminación con
+distintas direcciones. Estas 12 fuentes de iluminación son distintas entre sí,
+pero se repiten para todos los objetos. Esto hace posible que si pudiesen
+calcularse las direcciones de las 12 fuentes para un objeto en particular,
+entonces podrían reutilizarse para el resto de los objetos.
+
+En este caso pueden calcularse las direcciones de las fuentes de iluminación
+de uno de los objetos: la esfera. Lo que permite que esto sea posible es el
+hecho de conocer con exactitud la profundidad del objeto. Al saber que el
+objeto es una esfera, puede conocerse con exactitud la posición de cada
+punto, sabiendo el centro y el radio de la misma siguiendo la siguiente
+ecuación:
+
+\begin{center}
+$(x - x_0)^2 + (y - y_0)^2 + (z - z_0)^2 = r^2$
+\end{center}
+
+donde $z_0 = 0$ ya que suponemos que está centrada respecto del eje z.
+Gracias a esto, puede calcularse el vector normal a cada punto de la esfera
+
+\begin{center}
+$n = (x - x_0, y - y0, z)$
+\end{center}
+
+Sabemos, dada la naturaleza de la esfera, que el punto de mayor intensidad
+lumínica será el más cercano a la fuente de iluminación, por lo que la normal
+de dicho punto apuntará en dirección a la fuente. El vector opuesto a esta
+normal tiene la dirección de la fuente.
+
+Si se ejecuta este procedimiento para las 12 imágenes de la esfera, entonces
+el resultado será conocer la dirección de las 12 fuentes de iluminación. Esto
+permite, en los pasos siguientes del algoritmo de fotogrametría estéreo,
+poder calcular la normal para cada punto, basándose en que la fuente de
+iluminacion $s_i$ con $1 \leq i \leq 12$ es la misma para la imágen $i$ de
+cada objeto.
