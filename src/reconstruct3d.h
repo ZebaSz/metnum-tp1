@@ -3,7 +3,7 @@
 
 
 #include "matrix.h"
-#include "gauss.h"
+#include "plu.h"
 #include "calibration.h"
 #include "sparse_matrix.h"
 
@@ -39,7 +39,7 @@ matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, con
 matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &i2, const matrix<double> &i3,
                                 const direction &s1, const direction &s2, const direction &s3, options opts) {
     size_t height = i1.size(), width = i1[0].size();
-    PLUMatrix<double> sm = gaussian_elimination(sourceOfLightMatrix(s1, s2, s3));
+    PLUMatrix<double> sm = plu(sourceOfLightMatrix(s1, s2, s3));
     matrix<row<double>> normal;
 
     for (size_t i = 0; i < height; i++) {
@@ -60,6 +60,7 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
         }
         normal.push_back(r);
     }
+
     return normal;
 }
 
@@ -67,19 +68,23 @@ sparse_matrix calculateM(const matrix<row<double>> &n) {
     size_t height = n.size(), width = n[0].size(), n_size = width * height;
     sparse_matrix M(2*n_size, n_size);
     size_t n_i = 0;
-    for (size_t y = 0; y < height; y++) {
-        for (size_t x = 0; x < width; x++) {
+    // En la construccion de la M hay que salvar los bordes que no tienen posicion borde+1.
+    // Clavamos 0 en el borde inferior y el derecho
+    for (size_t y = 0; y < height-1; y++) { // La ultima fila tiene todos 0s
+        for (size_t x = 0; x < width-1; x++) { // La ultima columna tiene todos 0s
             M.set(n_i, n_i, -n[y][x][2]); //le pongo -nz
             M.set(n_i + 1, n_i, n[y][x][2]); //le pongo nz
             n_i++;
         }
+        n_i++; // Agrego acá este incremento porque si no, no aumenta en la ultima columna
     }
-    for (size_t y = 0; y < height; y++) {
-        for (size_t x = 0; x < width; x++) {
+    for (size_t y = 0; y < height-1; y++) { // La ultima fila tiene todos 0s
+        for (size_t x = 0; x < width-1; x++) { // La ultima columna tiene todos 0s
             M.set(n_i, n_i, -n[y][x][2]); //le pongo -nz
             M.set(n_i + height, n_i, n[y][x][2]); //le pongo nz
             n_i++;
         }
+        n_i++; // Agrego acá este incremento porque si no, no aumenta en la ultima columna
     }
     return M;
 }
@@ -87,7 +92,6 @@ sparse_matrix calculateM(const matrix<row<double>> &n) {
 vector<double> calculateV(const matrix<row<double>> &n) {
     size_t height = n.size(), width = n[0].size();
     vector<double> v;
-    size_t n_i = 0;
     for (size_t x = 0; x < width; x++) {
         for (size_t y = 0; y < height; y++) {
             v.push_back(-n[y][x][1]); //le pongo -ny
@@ -101,14 +105,23 @@ vector<double> calculateV(const matrix<row<double>> &n) {
     return v;
 }
 
+sparse_matrix transposedSparseMatrixProduct(sparse_matrix &mtm, sparse_matrix &m) {
+    size_t cols = m.getCols();
+    for (int n_i = 0; n_i < cols; ++n_i) {
+        // TODO: Aca esta la papota de la multiplcación de transpuestas
+
+    }
+}
+
 //Aqui viene lo bueno jovenes, I cho cho choleskyou
 matrix<double> findDepth(const matrix<row<double>> &normalField) {
     sparse_matrix m = calculateM(normalField);
-    sparse_matrix mt = m; mt.transponse();
-    // TODO: Aca hay que calcular Mtraspuesta*M
-    sparse_matrix mtm(m.getRows(), m.getRows());
-    // TODO: Aca hay que calcular Mtraspuesta*V
-    // TODO: Aca hay que choleskiar Az=b
+    vector<double> v = calculateV(normalField);
+    // TODO: Aca hay que calcular Mtraspuesta*M : Step 14a
+    sparse_matrix mtm(m.getCols(), m.getCols()); // Acá sabemos como está formada la matriz M (ya que es una func.
+    transposedSparseMatrixProduct(mtm, m);       // aux de esta parte) así que podemos hacer el producto de traspuestas acá
+    // TODO: Aca hay que calcular Mtraspuesta*V : Step 14b
+    // TODO: Aca hay que choleskiar Az=b : Step 15
     matrix<double> d;
     return d;
 }

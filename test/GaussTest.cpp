@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include "../src/matrix.h"
-#include "../src/gauss.h"
+#include "../src/plu.h"
 
 TEST(GaussTest, lower_triangle) {
     matrix<int> m(5, row<int>(5, 0));

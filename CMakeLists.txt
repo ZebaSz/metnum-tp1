@@ -4,7 +4,7 @@ project(metnum-tp1)
 set(SOURCE_FILES
         src/utils.cpp
         src/matrix.h
-        src/gauss.h
+        src/plu.h
         src/cholesky.h
         src/mask.h
         src/calibration.h
