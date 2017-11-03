@@ -59,50 +59,51 @@ matrix<T> cholesky_factorization(const matrix<T>& mx) {
     return L;
 }
 
-/*
+
 sparse_matrix sparse_cholesky_factorization(const sparse_matrix& mx) {
-    size_t n = mx.rows();
+    size_t n = mx.getRows();
 
-    sparse_matrix L(n, row<T>(n, 0));
+    sparse_matrix L(n, n);
 
-    L[0][0] = sqrt(mx[0][0]);
+    L.set(0,0, sqrt(mx.get(0,0)));
     for (size_t j = 1; j < n; ++j) {
-        L[j][0] = mx[j][0] / L[0][0];
+        L.set(j,0, (mx.get(j,0) / L.get(0,0)));
     }
 
     for (size_t i = 1; i < n-1; ++i) {
-        T sum_col_i = 0;
-        T c = 0.0;
+        double sum_col_i = 0;
+        double c = 0.0;
         for (size_t k = 0; k < i; ++k) {
             //Super Kahan!
-            T y = pow(L[i][k], 2)-c;
-            T t = sum_col_i + y;
+            double y = pow(L.get(i,k), 2)-c;
+            double t = sum_col_i + y;
             c = (t - sum_col_i) - y;
             sum_col_i = t;
         }
-        T lii = mx[i][i] - sum_col_i;
+        double lii = mx.get(i,i) - sum_col_i;
         assert(lii > 0);
-        L[i][i] = sqrt(lii);
+        L.set(i,i,sqrt(lii));
 
         for (size_t j = i+1; j < n; ++j) {
-            T sum_cols_ij = 0;
+            double sum_cols_ij = 0;
             c = 0.0;
             for (size_t k=0; k < i; ++k) {
                 //Super Kahan!
-                T y = (L[j][k] * L[i][k])-c;
-                T t = sum_cols_ij + y;
+                double y = (L.get(j,k) * L.get(i,k))-c;
+                double t = sum_cols_ij + y;
                 c = (t - sum_cols_ij) - y;
                 sum_cols_ij = t;
             }
 
-            L[j][i] = (mx[j][i] - sum_cols_ij) / L[i][i];
+            L.set(j,i, (mx.get(j,i) - sum_cols_ij) / L.get(i,i));
         }
     }
-    T sum_Lnk = 0;
+    double sum_Lnk = 0;
     for (size_t k=0; k < n-1; ++k) {
-        sum_Lnk += pow(L[n-1][k],2);
+        sum_Lnk += pow(L.get(n-1,k),2);
     }
-    L[n-1][n-1] = sqrt(mx[n-1][n-1] - sum_Lnk);
+    L.set(n-1,n-1, sqrt(mx.get(n-1,n-1) - sum_Lnk));
     return L;
-}/*
+}
+
 #endif //METNUM_TP1_CHOLESKY_H

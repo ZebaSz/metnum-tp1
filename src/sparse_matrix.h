@@ -64,7 +64,56 @@ class sparse_matrix {
             return nc;
         };
 
-    private:
+        row<double> productWithVector(const row<double> &b) {
+            row<double> result(rows, 0);
+
+            for (size_t i = 0; i < rows; ++i) {
+                for (size_t j = 0; j < cols; ++j) {
+                    result[i] += get(i,j) * b[j];
+                }
+            }
+
+            return result;
+        }
+
+
+        // Esta funcion asume que la matriz es cuadrada y triangular inferior.
+        row<double> solveCholeskySystem(row<double> b){
+            // Resuelvo Lz = b
+            size_t z_size = b.size();
+            row<double> z(z_size, 0);
+            for (size_t i = 0; i < z_size; ++i) {
+                double sumOfRowI = 0;
+                double c = 0.0;
+                for (size_t j = 0; j < i; ++j) {
+                    double y = (get(i,j) * z[j]) - c;
+                    double t = sumOfRowI + y;
+                    c = (t - sumOfRowI) - y;
+                    sumOfRowI = t;
+                }
+                z[i] = (b[i] - sumOfRowI) / get(i,i);
+            }
+
+            // Resuelvo L'x = z
+            trans = true;
+            size_t x_size = z.size();
+            row<double> x(x_size, 0);
+            for (size_t i = x_size - 1; i >= 0; --i) {
+                double sumOfRowI = 0;
+                double c = 0.0;
+                for (size_t j = x_size - 1; j > i; --j) {
+                    double y = (get(i,j) * x[j]) - c;
+                    double t = sumOfRowI + y;
+                    c = (t - sumOfRowI) - y;
+                    sumOfRowI = t;
+                }
+                x[i] = (b[i] - sumOfRowI) / get(i,i);
+            }
+
+            return x;
+        }
+
+private:
         bool trans;
         size_t rows;
         size_t cols;
