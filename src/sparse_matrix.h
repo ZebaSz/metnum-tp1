@@ -106,34 +106,33 @@ class sparse_matrix {
             // Resuelvo Lz = b
             size_t z_size = b.size();
             row<double> z(z_size, 0);
-            for (size_t i = 0; i < z_size; ++i) {
+            for (auto row = matrix.begin(); row != matrix.end(); ++row) {
                 double sumOfRowI = 0;
                 double c = 0.0;
-                for (size_t j = 0; j < i; ++j) {
-                    double y = (get(i,j) * z[j]) - c;
+                for (auto row_column = row->second.begin(); row_column != row->second.end(); row_column++) {
+                    double y = (row_column->second * z[row_column->first]) - c;
                     double t = sumOfRowI + y;
                     c = (t - sumOfRowI) - y;
                     sumOfRowI = t;
                 }
-                z[i] = (b[i] - sumOfRowI) / get(i,i);
+                z[row->first] = (b[row->first] - sumOfRowI) / row->second[row->first];
             }
 
             // Resuelvo L'x = z
             trans = true;
             size_t x_size = z.size();
             row<double> x(x_size, 0);
-            for (size_t i = x_size - 1; i >= 0; --i) {
+            for (auto row = matrix.rbegin(); row != matrix.rend(); ++row) {
                 double sumOfRowI = 0;
                 double c = 0.0;
-                for (size_t j = x_size - 1; j > i; --j) {
-                    double y = (get(i,j) * x[j]) - c;
+                for (auto row_column = row->second.begin(); row_column != row->second.end(); row_column++) {
+                    double y = (row_column->second * z[row_column->first]) - c;
                     double t = sumOfRowI + y;
                     c = (t - sumOfRowI) - y;
                     sumOfRowI = t;
                 }
-                x[i] = (b[i] - sumOfRowI) / get(i,i);
+                x[row->first] = (z[row->first] - sumOfRowI) / row->second[row->first];
             }
-
             return x;
         }
 

@@ -149,10 +149,15 @@ void transposedSparseMatrixProduct(sparse_matrix &mtm, sparse_matrix &m, size_t 
 
 matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width) {
     matrix<double> result(width, row<double>(height));
-    for (int i = 0; i < height; ++i) {
-        for (int j = 0; j < width; ++j) {
-            result[i][j] = z[j*width+i];
+    size_t col_number = 0;
+    for (int i = 0; i < z.size(); ++i) {
+        row<double> column;
+        for (int j = 0; j < height; ++j) {
+            column.push_back(z[i]);
+            ++i;
         }
+        result[col_number];
+        ++col_number;
     }
     return result;
 }
