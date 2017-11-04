@@ -27,7 +27,7 @@ struct PLUMatrix {
  * @param mx the matrix
  */
 template <typename T>
-PLUMatrix<T> plu(const matrix<T> &mx);
+PLUMatrix<T> pluFactorization(const matrix<T> &mx);
 
 template <typename T>
 void subtract_rows(row<T>& a, const row<T>& b, double multiplier);
@@ -44,7 +44,7 @@ template <typename T>
 size_t find_swap_rows(matrix<T>& m, size_t col);
 
 template <typename T>
-PLUMatrix<T> plu(const matrix<T> &original_matrix) {
+PLUMatrix<T> pluFactorization(const matrix<T> &original_matrix) {
     matrix<T> mx = original_matrix;
     PLUMatrix<T> plu((int) mx.size());
     for (size_t i = 0; i < mx.size() - 1; ++i) {

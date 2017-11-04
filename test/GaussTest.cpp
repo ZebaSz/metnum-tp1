@@ -9,7 +9,7 @@ TEST(GaussTest, lower_triangle) {
             m[i][j] = 1;
         }
     }
-    PLUMatrix<int> plu = gaussian_elimination(m);
+    PLUMatrix<int> plu = pluFactorization(m);
     for (size_t i = 0; i < m.size(); ++i) {
         for (size_t j = 0; j < m[i].size(); ++j) {
             ASSERT_EQ(plu.U[i][j], i == j ? 1 : 0) << "i=" << i << ",j=" << j;
@@ -33,7 +33,7 @@ TEST(GaussTest, lower_triangle_with_gap) {
     // [0, 0, 0, 0, 0]
     // [1, 1, 1, 1, 0]
     // [1, 1, 1, 1, 1]
-    PLUMatrix<int> plu = gaussian_elimination(m);
+    PLUMatrix<int> plu = pluFactorization(m);
 
     // Expected output matrix:
     // [1, 0, 0, 0, 0]
@@ -60,7 +60,7 @@ TEST(GaussTest, disordred) {
     arr[2] = new int[3]{0,1,0};
 
     matrix<int> m = Matrix::fromArr(arr, 3, 3);
-    PLUMatrix<int> plu = gaussian_elimination(m);
+    PLUMatrix<int> plu = pluFactorization(m);
 
     for (int i = 0; i < 3; ++i) {
         delete[] arr[i];
@@ -84,7 +84,7 @@ TEST(GaussTest, floatValues) {
         {-0.10881804865464406, 0.52734900501865967, 0.84265156452286083}
     };
 
-    PLUMatrix<double> plu = gaussian_elimination(mx);
+    PLUMatrix<double> plu = pluFactorization(mx);
     ASSERT_TRUE(Matrix::isUpperTriangular(plu.U));
     ASSERT_TRUE(Matrix::isLowerTriangular(plu.L));
     matrix<double> expected = Matrix::dotProduct(plu.P,mx);

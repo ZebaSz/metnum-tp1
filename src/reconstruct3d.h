@@ -40,7 +40,7 @@ matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, con
 matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &i2, const matrix<double> &i3,
                                 const direction &s1, const direction &s2, const direction &s3, options opts) {
     size_t height = i1.size(), width = i1[0].size();
-    PLUMatrix<double> sm = plu(sourceOfLightMatrix(s1, s2, s3));
+    PLUMatrix<double> sm = pluFactorization(sourceOfLightMatrix(s1, s2, s3));
     matrix<row<double>> normal;
 
     for (size_t i = 0; i < height; i++) {
@@ -126,7 +126,7 @@ vector<double> calculateV(const matrix<row<double>> &n) {
     return v;
 }
 
-void transposedSparseMatrixProduct(sparse_matrix &mtm, sparse_matrix &m) {
+void transposedSparseMatrixProduct(sparse_matrix &mtm, sparse_matrix &m, size_t height) {
     size_t cols = m.getCols(); // cols == n
 
     double first_upper_main_diag = m.get(0, 0);
@@ -137,32 +137,12 @@ void transposedSparseMatrixProduct(sparse_matrix &mtm, sparse_matrix &m) {
     for (size_t i = 1; i < cols; ++i) {
         double first_element_of_actual = m.get(i-1, i);
         double second_element_of_actual = m.get(i, i);
-        double third_element_of_actual = m.get(i+cols, i);
+        double third_element_of_actual = m.get(i+height, i);
         double pos_i_i = first_element_of_actual*first_element_of_actual + second_element_of_actual*second_element_of_actual + third_element_of_actual*third_element_of_actual;
         double pos_i_i_minus_1 = first_element_of_actual * m.get(i-1, i-1);
         mtm.set(i,i, pos_i_i);
         mtm.set(i,  i-1, pos_i_i_minus_1);
         mtm.set(i-1,i,   pos_i_i_minus_1);
-        //No se necesita calcular nada más porque va a dar siempre 0 salvo los escritos acá
-    }
-}
-
-// @param v es de 2n de long.
-// @param result debería llegar vacío y se va completando con la multiplicación. acábará siendo de long n ya que
-// @param m se multiplica con el vector v y m (que se usa como traspuesta) es de nX2n (aunque llega como de 2nXn)
-void transposedSparseMatrixProductWithVector(sparse_matrix &m, row<double> &v, row<double> &result){
-    size_t cols = m.getCols(); // cols == n
-    double first_upper_main_diag = m.get(0, 0);
-    double first_lower_main_diag = m.get(cols, 0);
-    double first_pos_i_i = first_upper_main_diag*v[0] + first_lower_main_diag* v[cols];
-    result.push_back(first_pos_i_i);
-
-    for (size_t i = 1; i < cols; ++i) {
-        double first_element_of_actual = m.get(i-1, i);
-        double second_element_of_actual = m.get(i, i);
-        double third_element_of_actual = m.get(i+cols, i);
-        double pos_i = first_element_of_actual*v[i-1] + second_element_of_actual*v[i] + third_element_of_actual*v[i+cols];
-        result.push_back(pos_i);
         //No se necesita calcular nada más porque va a dar siempre 0 salvo los escritos acá
     }
 }
@@ -181,20 +161,24 @@ matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width) {
 matrix<double> findDepth(const matrix<row<double>> &normalField) {
     std::cout << "Antes de calcular M" << std::endl;
     sparse_matrix m = calculateM(normalField);
+
     std::cout << "Despues de calcular M y antes de V" << std::endl;
     vector<double> v = calculateV(normalField);
+
     std::cout << "Despues de calcular V y antes de calcular MtM" << std::endl;
     // Calcular Mtraspuesta*M : Step 14a
-    sparse_matrix mtm(m.getCols(), m.getCols()); // Acá sabemos como está formada la matriz M (ya que es una func.
-    transposedSparseMatrixProduct(mtm, m);       // aux de esta parte) así que podemos hacer el producto de traspuestas acá
+    sparse_matrix mtm = m.transposedByNotTransposedProduct();
+
     std::cout << "Despues de calcular MtM y antes de calcular Mtv" << std::endl;
     // Calcular Mtraspuesta*V : Step 14b
-    row<double> b;
-    transposedSparseMatrixProductWithVector(m, v, b);
-    std::cout << "Despues de calcular Mtv y choleskiar" << std::endl;
+    row<double> b = m.transposedProductWithVector(v);
+
+    std::cout << "Despues de calcular Mtv" << std::endl;
     // Choleskiar Az=b : Step 15
+
     std::cout << "Antes de factorizar" << std::endl;
     sparse_matrix L = sparse_cholesky_factorization(mtm);
+
     std::cout << "Despues de factorizar y antes de resolver" << std::endl;
     row<double> z = L.solveCholeskySystem(b);
 
@@ -203,6 +187,7 @@ matrix<double> findDepth(const matrix<row<double>> &normalField) {
     size_t height = normalField.size();
     size_t width = normalField[0].size();
     matrix<double> d = solutionToMatrix(z, height, width);
+
     std::cout << "Despues de transformar vector a matriz" << std::endl;
     return d;
 }

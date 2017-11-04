@@ -64,15 +64,39 @@ class sparse_matrix {
             return nc;
         };
 
-        row<double> productWithVector(const row<double> &b) {
-            row<double> result(rows, 0);
+        row<double> transposedProductWithVector(const row<double> &b) {
+            row<double> result(cols, 0);
 
-            for (size_t i = 0; i < rows; ++i) {
-                for (size_t j = 0; j < cols; ++j) {
-                    result[i] += get(i,j) * b[j];
+            for (auto column = matrix.begin(); column !=  matrix.end(); ++column) {
+                double sum = 0;
+                for (auto column_row = column->second.begin(); column_row != column->second.end(); ++column_row) {
+                    sum += column_row->second * b[column_row->first];
                 }
+                size_t i = column->first;
+                result[i] = sum;
             }
 
+            return result;
+        }
+
+        sparse_matrix transposedByNotTransposedProduct() {
+            sparse_matrix result(cols, cols);
+            for (auto column = matrix.begin(); column !=  matrix.end(); ++column) {
+                auto column_plus_one = column;
+                column_plus_one++;
+                for (auto another_column = matrix.begin(); another_column != column_plus_one; ++another_column) {
+                    double sum = 0;
+                    for (auto column_row = column->second.begin(); column_row != column->second.end(); ++column_row) {
+                        sum += column_row->second * another_column->second[column_row->first];
+                    }
+                    size_t i = column->first;
+                    size_t j = another_column->first;
+                    result.set(i,j, sum);
+                    if (i != j) {
+                        result.set(j, i, sum);
+                    }
+                }
+            }
             return result;
         }
 
@@ -112,6 +136,14 @@ class sparse_matrix {
 
             return x;
         }
+
+        map<size_t, map<size_t,double>>::iterator matrixIterator() {
+            return matrix.begin();
+        };
+
+        map<size_t, map<size_t,double>>::iterator endOfMatrixIterator() {
+            return matrix.end();
+        };
 
 private:
         bool trans;

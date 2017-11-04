@@ -137,3 +137,21 @@ TEST(CholeskyTest, cannotFactorizeNonSymmetricMatrix) {
 
     ASSERT_DEATH(cholesky_factorization(m), "Assertion");
 }
+
+TEST(CholeskyTest, factorize3by3SparseMatrix) {
+sparse_matrix m(3, 3);
+m.set(0,0,1); m.set(0,1,1); m.set(0,2,1);
+m.set(1,0,1); m.set(1,1,2); m.set(1,2,2);
+m.set(2,0,1); m.set(2,1,2); m.set(2,2,3);
+
+sparse_matrix l = sparse_cholesky_factorization(m);
+ASSERT_EQ(l.get(0,0), 1) << "i=" << 0 << ",j=" << 0;
+ASSERT_EQ(l.get(0,1), 0) << "i=" << 0 << ",j=" << 1;
+ASSERT_EQ(l.get(0,2), 0) << "i=" << 0 << ",j=" << 2;
+ASSERT_EQ(l.get(1,0), 1) << "i=" << 1 << ",j=" << 0;
+ASSERT_EQ(l.get(1,1), 1) << "i=" << 1 << ",j=" << 1;
+ASSERT_EQ(l.get(1,2), 0) << "i=" << 1 << ",j=" << 2;
+ASSERT_EQ(l.get(2,0), 1) << "i=" << 2 << ",j=" << 0;
+ASSERT_EQ(l.get(2,1), 1) << "i=" << 2 << ",j=" << 1;
+ASSERT_EQ(l.get(2,2), 1) << "i=" << 2 << ",j=" << 2;
+}

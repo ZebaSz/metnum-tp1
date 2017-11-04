@@ -60,49 +60,32 @@ matrix<T> cholesky_factorization(const matrix<T>& mx) {
 }
 
 
-sparse_matrix sparse_cholesky_factorization(const sparse_matrix& mx) {
+
+sparse_matrix sparse_cholesky_factorization(sparse_matrix& mx) {
     size_t n = mx.getRows();
 
     sparse_matrix L(n, n);
 
-    L.set(0,0, sqrt(mx.get(0,0)));
-    for (size_t j = 1; j < n; ++j) {
-        L.set(j,0, (mx.get(j,0) / L.get(0,0)));
-    }
-
-    for (size_t i = 1; i < n-1; ++i) {
-        double sum_col_i = 0;
-        double c = 0.0;
-        for (size_t k = 0; k < i; ++k) {
-            //Super Kahan!
-            double y = pow(L.get(i,k), 2)-c;
-            double t = sum_col_i + y;
-            c = (t - sum_col_i) - y;
-            sum_col_i = t;
+    for (auto column = mx.matrixIterator(); column != mx.endOfMatrixIterator();  ++column) {
+        size_t j = column->first;
+        double sumOfColumn = 0;
+        for (auto row = column->second.begin(); row != column->second.end() && row->first < j; ++row) {
+            sumOfColumn += pow(L.get( row->first,j), 2);
         }
-        double lii = mx.get(i,i) - sum_col_i;
-        assert(lii > 0);
-        L.set(i,i,sqrt(lii));
+        L.set(j,j, sqrt(mx.get(j,j) - sumOfColumn));
 
-        for (size_t j = i+1; j < n; ++j) {
-            double sum_cols_ij = 0;
-            c = 0.0;
-            for (size_t k=0; k < i; ++k) {
-                //Super Kahan!
-                double y = (L.get(j,k) * L.get(i,k))-c;
-                double t = sum_cols_ij + y;
-                c = (t - sum_cols_ij) - y;
-                sum_cols_ij = t;
+        auto columnPlusOne = column;
+        columnPlusOne++;
+        for (auto anotherColumn = columnPlusOne; anotherColumn != mx.endOfMatrixIterator();  ++anotherColumn) {
+            size_t i = anotherColumn->first;
+            double sumOfL = 0;
+            for (auto row = column->second.begin(); row != column->second.end() && row->first < j; ++row) {
+                sumOfL += L.get(j, row->first) * L.get(i,row->first);
             }
-
-            L.set(j,i, (mx.get(j,i) - sum_cols_ij) / L.get(i,i));
+            L.set(j, anotherColumn->first, (1/L.get(j,j))*(mx.get(j,i) - sumOfColumn));
         }
     }
-    double sum_Lnk = 0;
-    for (size_t k=0; k < n-1; ++k) {
-        sum_Lnk += pow(L.get(n-1,k),2);
-    }
-    L.set(n-1,n-1, sqrt(mx.get(n-1,n-1) - sum_Lnk));
+    L.transponse();
     return L;
 }
 
