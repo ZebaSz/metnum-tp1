@@ -80,9 +80,9 @@ sparse_matrix sparse_cholesky_factorization(sparse_matrix& mx) {
             size_t i = anotherColumn->first;
             double sumOfL = 0;
             for (auto row = column->second.begin(); row != column->second.end() && row->first < j; ++row) {
-                sumOfL += L.get(j, row->first) * L.get(i,row->first);
+                sumOfL += L.get(row->first, j) * L.get(row->first, i);
             }
-            L.set(j, anotherColumn->first, (1/L.get(j,j))*(mx.get(j,i) - sumOfColumn));
+            L.set(j, i, (1/L.get(j,j))*(mx.get(j,i) - sumOfL));
         }
     }
     L.transponse();
