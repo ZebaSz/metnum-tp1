@@ -139,19 +139,63 @@ TEST(CholeskyTest, cannotFactorizeNonSymmetricMatrix) {
 }
 
 TEST(CholeskyTest, factorize3by3SparseMatrix) {
-sparse_matrix m(3, 3);
-m.set(0,0,1); m.set(0,1,1); m.set(0,2,1);
-m.set(1,0,1); m.set(1,1,2); m.set(1,2,2);
-m.set(2,0,1); m.set(2,1,2); m.set(2,2,3);
+    sparse_matrix m(3, 3);
+    m.set(0,0,1); m.set(0,1,1); m.set(0,2,1);
+    m.set(1,0,1); m.set(1,1,2); m.set(1,2,2);
+    m.set(2,0,1); m.set(2,1,2); m.set(2,2,3);
 
-sparse_matrix l = sparse_cholesky_factorization(m);
-ASSERT_EQ(l.get(0,0), 1) << "i=" << 0 << ",j=" << 0;
-ASSERT_EQ(l.get(0,1), 0) << "i=" << 0 << ",j=" << 1;
-ASSERT_EQ(l.get(0,2), 0) << "i=" << 0 << ",j=" << 2;
-ASSERT_EQ(l.get(1,0), 1) << "i=" << 1 << ",j=" << 0;
-ASSERT_EQ(l.get(1,1), 1) << "i=" << 1 << ",j=" << 1;
-ASSERT_EQ(l.get(1,2), 0) << "i=" << 1 << ",j=" << 2;
-ASSERT_EQ(l.get(2,0), 1) << "i=" << 2 << ",j=" << 0;
-ASSERT_EQ(l.get(2,1), 1) << "i=" << 2 << ",j=" << 1;
-ASSERT_EQ(l.get(2,2), 1) << "i=" << 2 << ",j=" << 2;
+    sparse_matrix l = sparse_cholesky_factorization(m);
+    ASSERT_EQ(l.get(0,0), 1) << "i=" << 0 << ",j=" << 0;
+    ASSERT_EQ(l.get(0,1), 0) << "i=" << 0 << ",j=" << 1;
+    ASSERT_EQ(l.get(0,2), 0) << "i=" << 0 << ",j=" << 2;
+    ASSERT_EQ(l.get(1,0), 1) << "i=" << 1 << ",j=" << 0;
+    ASSERT_EQ(l.get(1,1), 1) << "i=" << 1 << ",j=" << 1;
+    ASSERT_EQ(l.get(1,2), 0) << "i=" << 1 << ",j=" << 2;
+    ASSERT_EQ(l.get(2,0), 1) << "i=" << 2 << ",j=" << 0;
+    ASSERT_EQ(l.get(2,1), 1) << "i=" << 2 << ",j=" << 1;
+    ASSERT_EQ(l.get(2,2), 1) << "i=" << 2 << ",j=" << 2;
+}
+
+TEST(CholeskyTest, anotherFactorize3by3SparseMatrix) {
+    sparse_matrix m(3, 3);
+    m.set(0,0,4); m.set(0,1,12); m.set(0,2,-16);
+    m.set(1,0,12); m.set(1,1,37); m.set(1,2,-43);
+    m.set(2,0,-16); m.set(2,1,-43); m.set(2,2,98);
+
+    sparse_matrix l = sparse_cholesky_factorization(m);
+    ASSERT_EQ(l.get(0,0), 2) << "i=" << 0 << ",j=" << 0;
+    ASSERT_EQ(l.get(0,1), 0) << "i=" << 0 << ",j=" << 1;
+    ASSERT_EQ(l.get(0,2), 0) << "i=" << 0 << ",j=" << 2;
+    ASSERT_EQ(l.get(1,0), 6) << "i=" << 1 << ",j=" << 0;
+    ASSERT_EQ(l.get(1,1), 1) << "i=" << 1 << ",j=" << 1;
+    ASSERT_EQ(l.get(1,2), 0) << "i=" << 1 << ",j=" << 2;
+    ASSERT_EQ(l.get(2,0), -8) << "i=" << 2 << ",j=" << 0;
+    ASSERT_EQ(l.get(2,1), 5) << "i=" << 2 << ",j=" << 1;
+    ASSERT_EQ(l.get(2,2), 3) << "i=" << 2 << ",j=" << 2;
+}
+
+TEST(CholeskyTest, factorize4by4SparseMatrix) {
+    sparse_matrix m(4, 4);
+    m.set(0,0,1); m.set(0,1,1); m.set(0,2,1); m.set(0,3,1);
+    m.set(1,0,1); m.set(1,1,2); m.set(1,2,2); m.set(1,3,2);
+    m.set(2,0,1); m.set(2,1,2); m.set(2,2,3); m.set(2,3,3);
+    m.set(3,0,1); m.set(3,1,2); m.set(3,2,3); m.set(3,3,4);
+
+    sparse_matrix l = sparse_cholesky_factorization(m);
+    ASSERT_EQ(l.get(0,0), 1) << "i=" << 0 << ",j=" << 0;
+    ASSERT_EQ(l.get(0,1), 0) << "i=" << 0 << ",j=" << 1;
+    ASSERT_EQ(l.get(0,2), 0) << "i=" << 0 << ",j=" << 2;
+    ASSERT_EQ(l.get(0,3), 0) << "i=" << 0 << ",j=" << 3;
+    ASSERT_EQ(l.get(1,0), 1) << "i=" << 1 << ",j=" << 0;
+    ASSERT_EQ(l.get(1,1), 1) << "i=" << 1 << ",j=" << 1;
+    ASSERT_EQ(l.get(1,2), 0) << "i=" << 1 << ",j=" << 2;
+    ASSERT_EQ(l.get(1,3), 0) << "i=" << 1 << ",j=" << 3;
+    ASSERT_EQ(l.get(2,0), 1) << "i=" << 2 << ",j=" << 0;
+    ASSERT_EQ(l.get(2,1), 1) << "i=" << 2 << ",j=" << 1;
+    ASSERT_EQ(l.get(2,2), 1) << "i=" << 2 << ",j=" << 2;
+    ASSERT_EQ(l.get(2,3), 0) << "i=" << 2 << ",j=" << 3;
+    ASSERT_EQ(l.get(3,0), 1) << "i=" << 3 << ",j=" << 0;
+    ASSERT_EQ(l.get(3,1), 1) << "i=" << 3 << ",j=" << 1;
+    ASSERT_EQ(l.get(3,2), 1) << "i=" << 3 << ",j=" << 2;
+    ASSERT_EQ(l.get(3,3), 1) << "i=" << 3 << ",j=" << 3;
 }

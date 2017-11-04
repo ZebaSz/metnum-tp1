@@ -20,4 +20,4 @@ add_library(metnum-tp1-base ${PPMLOADER_FILES} ${SOURCE_FILES})
 add_executable(procesar src/main.cpp)
 target_link_libraries (procesar metnum-tp1-base)
 
-#add_subdirectory(test)
+add_subdirectory(test)
