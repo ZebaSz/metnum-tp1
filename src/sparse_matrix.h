@@ -3,14 +3,19 @@
 
 #include <map>
 #include <vector>
+#include <unordered_map>
 #include "matrix.h"
 
-using namespace std;
+using std::vector;
+using std::pair;
+using std::make_pair;
+
+typedef std::unordered_map<size_t, double> bucket;
 
 class sparse_matrix {
 
     public:
-        sparse_matrix(size_t rows, size_t cols) : rows(rows), cols(cols) {
+        sparse_matrix(size_t rows, size_t cols) : rows(rows), cols(cols), matrix(cols) {
             trans = false;
         }
 
@@ -26,38 +31,34 @@ class sparse_matrix {
             if (trans){
                 size_t w = x; x = y; y = w;
             }
-            auto x_map = matrix.find(x);
-            if (x_map != matrix.end()) {
-                auto y_map = x_map->second.find(y);
-                return (y_map != x_map->second.end()) ? y_map->second : 0;
-            } else {
-                return 0;
-            }
+            const bucket& x_map = matrix[x];
+            auto y_map = x_map.find(y);
+            return (y_map != x_map.end()) ? y_map->second : 0;
         }
 
         void set(size_t x, size_t y, double num) {
             if (trans){
                 size_t w = x; x = y; y = w;
             }
-            auto x_map = matrix.find(x);
-            if (x_map != matrix.end()) {
-                x_map->second.insert(std::pair<size_t, double>(y, num));
+            bucket& x_map = matrix[x];
+            if (num == 0) {
+                x_map.erase(y);
             } else {
-                map<size_t, double> ins;
-                ins.insert(std::pair<size_t, double>(y, num));
-                matrix.insert(std::pair<size_t, map<size_t, double>>(x, ins));
+                x_map.insert(make_pair(y, num));
             }
+
         }
 
         void transponse() {
             trans = !trans;
         }
 
-        std::vector<std::pair<size_t, size_t>> notZeros() {
-            std::vector<std::pair<size_t, size_t>> nc;
-            for(auto x = matrix.begin(); x != matrix.end(); ++x) {
-                for(auto y = x->second.begin(); y != x->second.end(); ++y) {
-                    std::pair<size_t, size_t> pair = (trans) ? std::pair<size_t, size_t>(y->first, x->first) : std::pair<size_t, size_t>(x->first, y->first);
+        vector<pair<size_t, size_t>> notZeros() {
+            vector<pair<size_t, size_t>> nc;
+            for (size_t i = 0; i < cols; ++i) {
+                bucket& x = matrix[i];
+                for(auto y = x.begin(); y != x.end(); ++y) {
+                    pair<size_t, size_t> pair = (trans) ? make_pair(y->first, i) : make_pair(i, y->first);
                     nc.push_back(pair);
                 }
             }
@@ -67,12 +68,12 @@ class sparse_matrix {
         row<double> transposedProductWithVector(const row<double> &b) {
             row<double> result(cols, 0);
 
-            for (auto column = matrix.begin(); column !=  matrix.end(); ++column) {
+            for (size_t i = 0; i < cols; ++i) {
+                bucket& column = matrix[i];
                 double sum = 0;
-                for (auto column_row = column->second.begin(); column_row != column->second.end(); ++column_row) {
+                for (auto column_row = column.begin(); column_row != column.end(); ++column_row) {
                     sum += column_row->second * b[column_row->first];
                 }
-                size_t i = column->first;
                 result[i] = sum;
             }
 
@@ -81,16 +82,14 @@ class sparse_matrix {
 
         sparse_matrix transposedByNotTransposedProduct() {
             sparse_matrix result(cols, cols);
-            for (auto column = matrix.begin(); column !=  matrix.end(); ++column) {
-                auto column_plus_one = column;
-                column_plus_one++;
-                for (auto another_column = matrix.begin(); another_column != column_plus_one; ++another_column) {
+            for (size_t i = 0; i < cols; ++i) {
+                bucket& column = matrix[i];
+                for (size_t j = 0; j <= i; ++j) {
+                    bucket& another_column = matrix[j];
                     double sum = 0;
-                    for (auto column_row = column->second.begin(); column_row != column->second.end(); ++column_row) {
-                        sum += column_row->second * another_column->second[column_row->first];
+                    for (auto column_row = column.begin(); column_row != column.end(); ++column_row) {
+                        sum += column_row->second * another_column[column_row->first];
                     }
-                    size_t i = column->first;
-                    size_t j = another_column->first;
                     result.set(i,j, sum);
                     if (i != j) {
                         result.set(j, i, sum);
@@ -106,49 +105,49 @@ class sparse_matrix {
             // Resuelvo Lz = b
             size_t z_size = b.size();
             row<double> z(z_size, 0);
-            for (auto row = matrix.begin(); row != matrix.end(); ++row) {
+            for (size_t i = 0; i < cols; ++i) {
+                // TODO revisar esto, no son filas
+                bucket& row = matrix[i];
                 double sumOfRowI = 0;
                 double c = 0.0;
-                for (auto row_column = row->second.begin(); row_column != row->second.end(); row_column++) {
+                for (auto row_column = row.begin(); row_column != row.end(); row_column++) {
                     double y = (row_column->second * z[row_column->first]) - c;
                     double t = sumOfRowI + y;
                     c = (t - sumOfRowI) - y;
                     sumOfRowI = t;
                 }
-                z[row->first] = (b[row->first] - sumOfRowI) / row->second[row->first];
+                z[i] = (b[i] - sumOfRowI) / row[i];
             }
 
             // Resuelvo L'x = z
             trans = true;
             size_t x_size = z.size();
             row<double> x(x_size, 0);
-            for (auto row = matrix.rbegin(); row != matrix.rend(); ++row) {
+
+            for (size_t i = 1; i <= cols; ++i) {
+                bucket& row = matrix[cols - i];
                 double sumOfRowI = 0;
                 double c = 0.0;
-                for (auto row_column = row->second.begin(); row_column != row->second.end(); row_column++) {
+                for (auto row_column = row.begin(); row_column != row.end(); row_column++) {
                     double y = (row_column->second * z[row_column->first]) - c;
                     double t = sumOfRowI + y;
                     c = (t - sumOfRowI) - y;
                     sumOfRowI = t;
                 }
-                x[row->first] = (z[row->first] - sumOfRowI) / row->second[row->first];
+                x[i] = (z[i] - sumOfRowI) / row[i];
             }
             return x;
         }
 
-        map<size_t, map<size_t,double>>::iterator matrixIterator() {
-            return matrix.begin();
-        };
-
-        map<size_t, map<size_t,double>>::iterator endOfMatrixIterator() {
-            return matrix.end();
-        };
+        const bucket& column(size_t col) const {
+            return matrix[col];
+        }
 
 private:
         bool trans;
         size_t rows;
         size_t cols;
-        map<size_t, map<size_t,double>> matrix;
+        vector<bucket> matrix;
 };
 
 

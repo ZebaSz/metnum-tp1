@@ -91,7 +91,7 @@ int main(int argc, char** argv) {
 #endif
     //----DEPTH
     matrix<double> depth = findDepth(normal);
-    Utils::saveMatrixFile(depth, figureName + ".depth.csv");
+    Utils::saveMatrixFile(depth, outputName + ".depth.csv");
     //----END
     return 0;
 }

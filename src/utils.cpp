@@ -52,6 +52,7 @@ namespace Utils {
         sprintf(comments, "%s", "Hello world");
 
         bool ret = SavePPMFile(dst.c_str(), out, w, h, PPM_LOADER_PIXEL_TYPE_GRAY_8B, comments);
+        delete[] out;
         if (!ret) {
             throw std::runtime_error("Couldn't save Image to ppm file");
         }

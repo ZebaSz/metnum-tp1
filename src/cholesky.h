@@ -66,20 +66,18 @@ sparse_matrix sparse_cholesky_factorization(sparse_matrix& mx) {
 
     sparse_matrix L(n, n);
 
-    for (auto column = mx.matrixIterator(); column != mx.endOfMatrixIterator();  ++column) {
-        size_t j = column->first;
+    for (size_t j = 0; j < mx.getCols(); ++j) {
+        const bucket& column = mx.column(j);
         double sumOfColumn = 0;
-        for (auto row = column->second.begin(); row != column->second.end() && row->first < j; ++row) {
+        for (auto row = column.begin(); row != column.end() && row->first < j; ++row) {
             sumOfColumn += pow(L.get( row->first,j), 2);
         }
         L.set(j,j, sqrt(mx.get(j,j) - sumOfColumn));
 
-        auto columnPlusOne = column;
-        columnPlusOne++;
-        for (auto anotherColumn = columnPlusOne; anotherColumn != mx.endOfMatrixIterator();  ++anotherColumn) {
-            size_t i = anotherColumn->first;
+        for (size_t i = j + 1; i < mx.getCols(); ++i) {
+            const bucket& anotherColumn = mx.column(i);
             double sumOfL = 0;
-            for (auto row = column->second.begin(); row != column->second.end() && row->first < j; ++row) {
+            for (auto row = column.begin(); row != column.end() && row->first < j; ++row) {
                 sumOfL += L.get(row->first, j) * L.get(row->first, i);
             }
             L.set(j, i, (1/L.get(j,j))*(mx.get(j,i) - sumOfL));

@@ -53,9 +53,11 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
                 row<double> m = Matrix::solvePLUSystem(sm.P, sm.L, sm.U, {i1[i][j], i2[i][j], i3[i][j]});
                 //(6)
                 double mNorm = Matrix::twoNorm(m);
-                m[0] /= mNorm;
-                m[1] /= mNorm;
-                m[2] /= mNorm;
+                if(mNorm == 0) {
+                    m[0] /= mNorm;
+                    m[1] /= mNorm;
+                    m[2] /= mNorm;
+                }
                 r.push_back(m);
             }
         }
@@ -64,51 +66,63 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
 
     return normal;
 }
-/*
 
 sparse_matrix calculateM(const matrix<row<double>> &n) {
-    size_t height = n.size(), width = n[0].size(), n_size = width * height;
+    size_t height = n.size();
+    size_t width = n[0].size();
+    size_t n_size = width * height;
     sparse_matrix M(2*n_size, n_size);
     size_t n_i = 0;
+
     // En la construccion de la M hay que salvar los bordes que no tienen posicion borde+1.
-    // Clavamos 0 en el borde inferior y el derecho
-    for (size_t y = 0; y < height-1; y++) { // La ultima fila tiene todos 0s
-        for (size_t x = 0; x < width-1; x++) { // La ultima columna tiene todos 0s
+    for (size_t y = 0; y < height - 1; y++) {
+        for (size_t x = 0; x < width; x++) {
             M.set(n_i, n_i, -n[y][x][2]); //le pongo -nz
             M.set(n_i + 1, n_i, n[y][x][2]); //le pongo nz
             n_i++;
         }
-        n_i++; // Agrego acá este incremento porque si no, no aumenta en la ultima columna
     }
-    for (size_t y = 0; y < height-1; y++) { // La ultima fila tiene todos 0s
-        for (size_t x = 0; x < width-1; x++) { // La ultima columna tiene todos 0s
-            M.set(n_i, n_i, -n[y][x][2]); //le pongo -nz
-            M.set(n_i + height, n_i, n[y][x][2]); //le pongo nz
+    for (size_t x = 0; x < width - 1; x++) { // La ultima columna tiene todos 0s
+        M.set(n_i, n_i, -n[height - 1][x][2]); //le pongo -nz
+        M.set(n_i + 1, n_i, n[height - 1][x][2]); //le pongo nz
+        n_i++;
+    }
+    M.set(n_i, n_i, -n[height - 1][width - 1][2]); //le pongo -nz
+
+    n_i = 0; // arrancamos de nuevo de la columa 0, pero usamos un offset de filas
+
+    for (size_t y = 0; y < height-1; y++) {
+        for (size_t x = 0; x < width; x++) {
+            M.set(n_i, n_i + n_size, -n[y][x][2]); //le pongo -nz
+            M.set(n_i + height, n_i + n_size, n[y][x][2]); //le pongo nz
             n_i++;
         }
-        n_i++; // Agrego acá este incremento porque si no, no aumenta en la ultima columna
+    }
+    for (size_t x = 0; x < width; x++) {
+        M.set(n_i, n_i + n_size, -n[height-1][x][2]); //le pongo -nz
+        n_i++;
     }
     return M;
 }
-*/
 
+/*
 sparse_matrix calculateM(const matrix<row<double>> &n) {
     size_t height = n.size(), width = n[0].size(), n_size = width * height;
     sparse_matrix M(2*n_size, n_size);
     for (size_t y = 0; y < height-1; y++) {
         for (size_t x = 0; x < width - 1; x++) {
-            M.set(y, x, -n[y][x][2]);
-            M.set(y, x+1, n[y][x][2]);
+            M.set(x, y, -n[y][x][2]);
+            M.set(x+1, y, n[y][x][2]);
         }
     }
     for (size_t y = 0; y < height-1; y++) {
         for (size_t x = 0; x < width - 1; x++) {
-            M.set(y, x, -n[y][x][2]);
-            M.set(y, x+height, n[y][x][2]);
+            M.set(x, y, -n[y][x][2]);
+            M.set(x+height, y, n[y][x][2]);
         }
     }
     return M;
-}
+}*/
 
 vector<double> calculateV(const matrix<row<double>> &n) {
     size_t height = n.size(), width = n[0].size();
@@ -148,16 +162,11 @@ void transposedSparseMatrixProduct(sparse_matrix &mtm, sparse_matrix &m, size_t 
 }
 
 matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width) {
-    matrix<double> result(width, row<double>(height));
-    size_t col_number = 0;
-    for (int i = 0; i < z.size(); ++i) {
-        row<double> column;
-        for (int j = 0; j < height; ++j) {
-            column.push_back(z[i]);
-            ++i;
+    matrix<double> result(height, row<double>(width));
+    for (size_t i = 0; i < height; ++i) {
+        for (size_t j = 0; j < width; ++j) {
+            result[i][j] = z[i + j * height];
         }
-        result[col_number];
-        ++col_number;
     }
     return result;
 }
