@@ -91,16 +91,14 @@ sparse_matrix calculateM(const matrix<row<double>> &n) {
 
     n_i = 0; // arrancamos de nuevo de la columa 0, pero usamos un offset de filas
 
-    for (size_t y = 0; y < height-1; y++) {
+    for (size_t y = 0; y < height; y++) {
         for (size_t x = 0; x < width; x++) {
             M.set(n_i, n_i + n_size, -n[y][x][2]); //le pongo -nz
-            M.set(n_i + height, n_i + n_size, n[y][x][2]); //le pongo nz
+            if(n_i + height < n_size) {
+                M.set(n_i + height, n_i + n_size, n[y][x][2]); //le pongo nz
+            }
             n_i++;
         }
-    }
-    for (size_t x = 0; x < width; x++) {
-        M.set(n_i, n_i + n_size, -n[height-1][x][2]); //le pongo -nz
-        n_i++;
     }
     return M;
 }
