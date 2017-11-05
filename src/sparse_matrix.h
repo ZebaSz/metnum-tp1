@@ -88,7 +88,10 @@ class sparse_matrix {
                     bucket& another_column = matrix[j];
                     double sum = 0;
                     for (auto column_row = column.begin(); column_row != column.end(); ++column_row) {
-                        sum += column_row->second * another_column[column_row->first];
+                        auto another_column_row = another_column.find(column_row->first);
+                        if(another_column_row != another_column.end()) {
+                            sum += column_row->second * another_column_row->second;
+                        }
                     }
                     result.set(i,j, sum);
                     if (i != j) {
