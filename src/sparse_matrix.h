@@ -3,14 +3,14 @@
 
 #include <map>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include "matrix.h"
 
 using std::vector;
 using std::pair;
 using std::make_pair;
 
-typedef std::unordered_map<size_t, double> bucket;
+typedef std::map<size_t, double> bucket;
 
 class sparse_matrix {
 
