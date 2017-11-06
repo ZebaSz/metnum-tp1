@@ -44,7 +44,7 @@ class sparse_matrix {
             if (num == 0) {
                 x_map.erase(y);
             } else {
-                x_map.insert(make_pair(y, num));
+                x_map[y] = num;
             }
 
         }

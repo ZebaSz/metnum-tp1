@@ -9,7 +9,8 @@ set(SOURCE_FILES
         src/mask.h
         src/calibration.h
         src/cholesky.h
-        src/reconstruct3d.h src/sparse_matrix.cpp src/sparse_matrix.h)
+        src/reconstruct3d.h
+        src/sparse_matrix.h)
 
 set(PPMLOADER_FILES src/ppmloader/ppmloader.cpp)
 

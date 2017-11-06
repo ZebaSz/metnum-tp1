@@ -34,30 +34,6 @@ namespace Utils {
         delete [] data;
         return result;
     }
-
-    void saveGrayScaleImage(const matrix<double>& img, const std::string& dst) {
-        size_t height = img.size(), width = img[0].size();
-        int h = (int) height, w = (int) width;
-        uchar* out = new uchar[height * width];
-
-        int a = 0;
-        for (size_t i = 0; i < height; i++) {
-            for (size_t j = 0; j < width; j++) {
-                out[a] = (uchar) img[i][j];
-                a++;
-            }
-        }
-
-        char comments[100];
-        sprintf(comments, "%s", "Hello world");
-
-        bool ret = SavePPMFile(dst.c_str(), out, w, h, PPM_LOADER_PIXEL_TYPE_GRAY_8B, comments);
-        delete[] out;
-        if (!ret) {
-            throw std::runtime_error("Couldn't save Image to ppm file");
-        }
-    }
-
     matrix<double> loadGrayImage(const std::string& filename) {
         return grayscalify(loadImage(filename));
     }

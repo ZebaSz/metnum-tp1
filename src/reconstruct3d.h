@@ -103,25 +103,6 @@ sparse_matrix calculateM(const matrix<row<double>> &n) {
     return M;
 }
 
-/*
-sparse_matrix calculateM(const matrix<row<double>> &n) {
-    size_t height = n.size(), width = n[0].size(), n_size = width * height;
-    sparse_matrix M(2*n_size, n_size);
-    for (size_t y = 0; y < height-1; y++) {
-        for (size_t x = 0; x < width - 1; x++) {
-            M.set(x, y, -n[y][x][2]);
-            M.set(x+1, y, n[y][x][2]);
-        }
-    }
-    for (size_t y = 0; y < height-1; y++) {
-        for (size_t x = 0; x < width - 1; x++) {
-            M.set(x, y, -n[y][x][2]);
-            M.set(x+height, y, n[y][x][2]);
-        }
-    }
-    return M;
-}*/
-
 vector<double> calculateV(const matrix<row<double>> &n) {
     size_t height = n.size(), width = n[0].size();
     vector<double> v;
@@ -136,27 +117,6 @@ vector<double> calculateV(const matrix<row<double>> &n) {
         }
     }
     return v;
-}
-
-void transposedSparseMatrixProduct(sparse_matrix &mtm, sparse_matrix &m, size_t height) {
-    size_t cols = m.getCols(); // cols == n
-
-    double first_upper_main_diag = m.get(0, 0);
-    double first_lower_main_diag = m.get(cols, 0);
-    double first_pos_i_i = first_upper_main_diag*first_upper_main_diag + first_lower_main_diag*first_lower_main_diag;
-    mtm.set(0,0,first_pos_i_i);
-
-    for (size_t i = 1; i < cols; ++i) {
-        double first_element_of_actual = m.get(i-1, i);
-        double second_element_of_actual = m.get(i, i);
-        double third_element_of_actual = m.get(i+height, i);
-        double pos_i_i = first_element_of_actual*first_element_of_actual + second_element_of_actual*second_element_of_actual + third_element_of_actual*third_element_of_actual;
-        double pos_i_i_minus_1 = first_element_of_actual * m.get(i-1, i-1);
-        mtm.set(i,i, pos_i_i);
-        mtm.set(i,  i-1, pos_i_i_minus_1);
-        mtm.set(i-1,i,   pos_i_i_minus_1);
-        //No se necesita calcular nada más porque va a dar siempre 0 salvo los escritos acá
-    }
 }
 
 matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width) {
