@@ -8,7 +8,7 @@ TEST(SparseMatrixTest, solveCholeskySystem) {
     sparse_matrix L(5,5);
 
     for (size_t i = 0; i < 5; i++) {
-        for (size_t j = 0; j < i; ++j) {
+        for (size_t j = 0; j <= i; ++j) {
             L.set(i,j,1);
         }
     }
@@ -17,9 +17,9 @@ TEST(SparseMatrixTest, solveCholeskySystem) {
 
     row<double> result = L.solveCholeskySystem(b);
 
-    ASSERT_EQ(result[0],   0);
-    ASSERT_EQ(result[1],  -1);
-    ASSERT_EQ(result[2],   0);
-    ASSERT_EQ(result[3], -97);
     ASSERT_EQ(result[4],  99);
+    ASSERT_EQ(result[3], -97);
+    ASSERT_EQ(result[2],   0);
+    ASSERT_EQ(result[1],  -1);
+    ASSERT_EQ(result[0],   0);
 }

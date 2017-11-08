@@ -106,39 +106,44 @@ class sparse_matrix {
         // Esta funcion asume que la matriz es cuadrada y triangular inferior.
         row<double> solveCholeskySystem(row<double> b){
             // Resuelvo Lz = b
+
             size_t z_size = b.size();
             row<double> z(z_size, 0);
             for (size_t i = 0; i < cols; ++i) {
-                // TODO revisar esto, no son filas
-                bucket& row = matrix[i];
+                bucket& column = matrix[i];
                 double sumOfRowI = 0;
                 double c = 0.0;
-                for (auto row_column = row.begin(); row_column != row.end(); row_column++) {
-                    double y = (row_column->second * z[row_column->first]) - c;
+                for (auto row_column = column.begin(); row_column != column.end() && row_column->first <= i; row_column++) {
+                    double y = (get(i,row_column->first) * z[row_column->first]) - c;
                     double t = sumOfRowI + y;
                     c = (t - sumOfRowI) - y;
                     sumOfRowI = t;
                 }
-                z[i] = (b[i] - sumOfRowI) / row[i];
+                if (get(i,i) != 0) {
+                    z[i] = (b[i] - sumOfRowI) / get(i,i);
+                }
             }
 
             // Resuelvo L'x = z
-            trans = true;
             size_t x_size = z.size();
             row<double> x(x_size, 0);
 
-            for (size_t i = 1; i <= cols; ++i) {
-                bucket& row = matrix[cols - i];
+            trans = !trans;
+            for (size_t i = cols-1; i > 0; --i) {
+                bucket& column = matrix[i];
                 double sumOfRowI = 0;
                 double c = 0.0;
-                for (auto row_column = row.begin(); row_column != row.end(); row_column++) {
-                    double y = (row_column->second * z[row_column->first]) - c;
+                for (size_t j = cols-1; j >= i; j--) {
+                    double y = (get(i,j) * x[j]) - c;
                     double t = sumOfRowI + y;
                     c = (t - sumOfRowI) - y;
                     sumOfRowI = t;
                 }
-                x[i] = (z[i] - sumOfRowI) / row[i];
+                if (get(i,i) != 0) {
+                    x[i] = (z[i] - sumOfRowI) / get(i,i);
+                }
             }
+            trans = !trans;
             return x;
         }
 
