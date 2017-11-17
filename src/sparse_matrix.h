@@ -159,6 +159,16 @@ class sparse_matrix {
             }
             return transposedMatrix;
         }
+
+        void removeColumn(size_t colNumber) {
+            matrix.erase(matrix.begin()+colNumber);
+            cols -= 1;
+        }
+
+        void resizeHeight(size_t actualRows) {
+            rows = actualRows;
+        }
+
 private:
         bool trans;
         size_t rows;

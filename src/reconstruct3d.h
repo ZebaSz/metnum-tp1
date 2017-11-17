@@ -7,16 +7,18 @@
 #include "cholesky.h"
 #include "calibration.h"
 #include "sparse_matrix.h"
+#include <cmath>
 
 struct options {
     options(bool maskOptimization) : maskOptimization(maskOptimization) {}
     bool maskOptimization;
 };
 
-struct resizedSparseMatrix {
-    resizedSparseMatrix(sparse_matrix m, row<size_t> rowsOfZeros) : matrix(m), rowsOfZeros(rowsOfZeros) {}
+struct sparseMatrixVAndValidPixels{
+    sparseMatrixVAndValidPixels(sparse_matrix m, row<double> v, row<size_t> validPixels) : matrix(m), v(v), validPixels(validPixels) {}
     sparse_matrix matrix;
-    row<size_t> rowsOfZeros;
+    row<size_t> validPixels;
+    row<double> v;
 };
 
 matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, const direction &s3) {
@@ -73,57 +75,56 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
     return normal;
 }
 
-resizedSparseMatrix calculateM(const matrix<row<double>> &n) {
+sparseMatrixVAndValidPixels calculateM(const matrix<row<double>> &n) {
     size_t height = n.size();
     size_t width = n[0].size();
     size_t n_size = width * height;
     sparse_matrix M(2*n_size, n_size);
     size_t n_i = 0;
-    row<size_t> rowsWithZeros(0);
-    size_t actualRow = 0;
+    size_t column_number = 0;
+    vector<double> v;
+
+    row<size_t> validPixels(0);
 
     // En la construccion de la M hay que salvar los bordes que no tienen posicion borde+1.
     for (size_t x = 0; x < width; x++) {
         for (size_t y = 0; y < height - 1; y++) {
-            if (n[y][x][2] > 0.00001 || n[y][x][2] < -0.00001) {
-                M.set(n_i, n_i, -n[y][x][2]); //le pongo -nz
-                M.set(n_i + 1, n_i, n[y][x][2]); //le pongo nz
+            if (std::abs(n[y][x][2]) > 0.001) {
+                M.set(column_number, n_i, -n[y][x][2]); //le pongo -nz
+                M.set(column_number + 1, n_i, n[y][x][2]); //le pongo nz
+                v.push_back(-n[y][x][1]); //le pongo -ny
+                validPixels.push_back(column_number);
                 n_i++;
-                actualRow++;
-            } else {
-                rowsWithZeros.push_back(actualRow);
-                actualRow++;
             }
+            column_number++;
         }
-        rowsWithZeros.push_back(actualRow);
-        actualRow++;
     }
 
-    size_t otroN_i = 0; // arrancamos de nuevo de la columa 0, pero usamos un offset de filas
-    actualRow = 0; // arrancamos de nuevo de la columa 0, pero usamos un offset de filas
+
+    column_number = 0;  // arrancamos de nuevo de la columa 0, pero usamos un offset de filas
 
     for (size_t x = 0; x < width - 1; x++) {
         for (size_t y = 0; y < height; y++) {
-            if (n[y][x][2] > 0.00001 || n[y][x][2] < -0.00001) {
-                M.set(otroN_i, n_i, -n[y][x][2]); //le pongo -nz
-                M.set(otroN_i + height, n_i, n[y][x][2]); //le pongo nz
+            if (std::abs(n[y][x][2]) > 0.001) {
+                M.set(column_number, n_i, -n[y][x][2]); //le pongo -nz
+                M.set(column_number + height, n_i, n[y][x][2]); //le pongo nz
+                v.push_back(-n[y][x][0]); //le pongo -nx
                 n_i++;
-                otroN_i++;
-                actualRow++;
-            } else {
-                rowsWithZeros.push_back(actualRow + n_size);
-                actualRow++;
             }
+            column_number++;
         }
     }
-    for (size_t y = 0; y < height; y++) {
-        // Agregamos la ultima columna de 0s
-        rowsWithZeros.push_back(actualRow + n_size);
-        actualRow++;
-    }
-    resizedSparseMatrix result(M, rowsWithZeros);
 
-    return result;
+    M.resizeHeight(n_i);
+
+    for (size_t pixel_number = 0; pixel_number < M.getCols(); ++pixel_number) {
+        auto & colI = M.column(pixel_number);
+        if (colI.empty()) {
+            M.removeColumn(pixel_number);
+        }
+    }
+
+    return sparseMatrixVAndValidPixels(M,v,validPixels);
 }
 
 vector<double> calculateV(const matrix<row<double>> &n, const row<size_t> &rowsOfZeros) {
@@ -180,19 +181,18 @@ matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width) {
 //Aqui viene lo bueno jovenes, I cho cho choleskyou
 matrix<double> findDepth(const matrix<row<double>> &normalField) {
     std::cout << "Antes de calcular M" << std::endl;
-    resizedSparseMatrix mAndVectorOfRowsOfZeros = calculateM(normalField);
-    sparse_matrix m = mAndVectorOfRowsOfZeros.matrix;
+    sparseMatrixVAndValidPixels mAndVectorOfRowsOfZeros = calculateM(normalField);
 
-    std::cout << "Despues de calcular M y antes de V" << std::endl;
-    vector<double> v = calculateV(normalField, mAndVectorOfRowsOfZeros.rowsOfZeros);
+    //std::cout << "Despues de calcular M y antes de V" << std::endl;
+    //vector<double> v = calculateV(normalField, mAndVectorOfRowsOfZeros.rowsOfZeros);
 
     std::cout << "Despues de calcular V y antes de calcular MtM" << std::endl;
     // Calcular Mtraspuesta*M : Step 14a
-    sparse_matrix mtm = m.transposedByNotTransposedProduct();
+    sparse_matrix mtm = mAndVectorOfRowsOfZeros.matrix.transposedByNotTransposedProduct();
 
     std::cout << "Despues de calcular MtM y antes de calcular Mtv" << std::endl;
     // Calcular Mtraspuesta*V : Step 14b
-    row<double> b = m.transposedProductWithVector(v);
+    row<double> b = mAndVectorOfRowsOfZeros.matrix.transposedProductWithVector(mAndVectorOfRowsOfZeros.v);
 
     std::cout << "Despues de calcular Mtv" << std::endl;
     // Choleskiar Az=b : Step 15
@@ -207,7 +207,7 @@ matrix<double> findDepth(const matrix<row<double>> &normalField) {
     // z tiene forma (z11,z12,...,z1h,z21,z22,...,z2h,z31,...,zwh)
     size_t height = normalField.size();
     size_t width = normalField[0].size();
-    row<double> zWithZeros = addZeros(z, mAndVectorOfRowsOfZeros.rowsOfZeros);
+    row<double> zWithZeros = addZeros(z, mAndVectorOfRowsOfZeros.validPixels);
     matrix<double> d = solutionToMatrix(zWithZeros, height, width);
 
     std::cout << "Despues de transformar vector a matriz" << std::endl;
