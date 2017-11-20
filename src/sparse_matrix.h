@@ -151,7 +151,7 @@ class sparse_matrix {
 
         sparse_matrix fullTranspose() {
             sparse_matrix transposedMatrix(cols,rows);
-            for (int i = 0; i < cols; ++i) {
+            for (size_t i = 0; i < cols; ++i) {
                 bucket& column = matrix[i];
                 for (auto columnIt = column.begin(); columnIt != column.end() ; columnIt++) {
                     transposedMatrix.set(columnIt->first, i, columnIt->second);

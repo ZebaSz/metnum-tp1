@@ -90,8 +90,8 @@ TEST(GaussTest, floatValues) {
     matrix<double> expected = Matrix::dotProduct(plu.P,mx);
     matrix<double> result = Matrix::dotProduct(plu.L, plu.U);
 
-    for (int i = 0; i < expected.size(); ++i) {
-        for (int j = 0; j < expected[i].size(); ++j) {
+    for (size_t i = 0; i < expected.size(); ++i) {
+        for (size_t j = 0; j < expected[i].size(); ++j) {
             ASSERT_NEAR(expected[i][j], result[i][j], 0.00000000000000002);
         }
     }

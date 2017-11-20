@@ -3,7 +3,6 @@
 
 #include <vector>
 #include <assert.h>
-#include "matrix.h"
 #include "math.h"
 
 template<typename T>
@@ -30,12 +29,12 @@ namespace Matrix {
     }
 
     template<typename T>
-    int rows(const matrix<T> &m) {
+    size_t rows(const matrix<T> &m) {
         return m.size();
     }
 
     template<typename T>
-    int columns(const matrix<T> &m) {
+    size_t columns(const matrix<T> &m) {
         return m[0].size();
     }
 
@@ -284,10 +283,10 @@ namespace Matrix {
 
         size_t solution_size = A.size();
         row<T> solution(solution_size, 0);
-        for (int i = solution_size - 1; i >= 0; --i) {
+        for (long i = solution_size - 1; i >= 0; --i) {
             T sumOfRowI = 0;
             T c = 0.0;
-            for (int j = solution_size - 1; j > i; --j) {
+            for (long j = solution_size - 1; j > i; --j) {
                 T y = (A[i][j] * solution[j]) - c;
                 T t = sumOfRowI + y;
                 c = (t - sumOfRowI) - y;

@@ -15,10 +15,9 @@ struct options {
 };
 
 struct sparseMatrixVAndValidPixels{
-    sparseMatrixVAndValidPixels(sparse_matrix m, row<double> v, row<size_t> validPixels) : matrix(m), v(v), validPixels(validPixels) {}
     sparse_matrix matrix;
-    row<size_t> validPixels;
     row<double> v;
+    row<size_t> validPixels;
 };
 
 matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, const direction &s3) {
@@ -124,7 +123,7 @@ sparseMatrixVAndValidPixels calculateM(const matrix<row<double>> &n) {
         }
     }
 
-    return sparseMatrixVAndValidPixels(M,v,validPixels);
+    return {M,v,validPixels};
 }
 
 vector<double> calculateV(const matrix<row<double>> &n, const row<size_t> &rowsOfZeros) {

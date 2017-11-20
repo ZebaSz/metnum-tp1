@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 #include "../src/calibration.h"
-#include "../src/utils.h"
 
 TEST(CalibrationTest, vs_control_lights) {
     std::vector<direction> control(
@@ -19,8 +18,7 @@ TEST(CalibrationTest, vs_control_lights) {
     );
 
 
-    matrix<double> mask(
-            Utils::grayscalify(Utils::loadImage("ppmImagenes/mate/mate.mask.ppm")));
+    Mask::mask msk = Mask::load_mask("ppmImagenes/mate/mate.mask.ppm");
 
 
     std::vector<matrix<double>> mate;
@@ -33,7 +31,7 @@ TEST(CalibrationTest, vs_control_lights) {
         mate.push_back(test);
     }
 
-    std::vector<direction> res = Calibration::calibrate(mate, mask);
+    std::vector<direction> res = Calibration::calibrate(mate, msk);
     ASSERT_EQ(control.size(), res.size());
     for (size_t i = 0; i < control.size(); ++i) {
         std::cout << "IMAGEN:" << i << endl;

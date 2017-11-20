@@ -2,9 +2,6 @@
 #include "../src/sparse_matrix.h"
 
 TEST(SparseMatrixTest, solveCholeskySystem) {
-    int size = 5;
-    double value = 1;
-
     sparse_matrix L(5,5);
 
     for (size_t i = 0; i < 5; i++) {

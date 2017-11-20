@@ -10,6 +10,12 @@ struct direction{
     double z;
 };
 
+struct circle {
+    size_t xCenter;
+    size_t yCenter;
+    size_t radius;
+};
+
 ostream& operator<< (ostream& os, const direction& dir) {
     os << "x: " << dir.x  << endl;
     os << "y: " << dir.y << endl;
@@ -25,10 +31,16 @@ namespace Calibration {
      * @tparam vector<matrix<double>>
      * @param imgs the vector of matrixes of the images of the sphere
      */
-    vector<direction> calibrate(const vector<matrix<double>> &imgs, const matrix<double> &mask) {
+    vector<direction> calibrate(const vector<matrix<double>> &imgs, const Mask::mask &msk) {
         assert(imgs.size() > 0);
 
-        Mask::circle circ = Mask::get_center_and_radius(mask);
+
+        auto& clip = msk.clip;
+        size_t radius = (clip.right - clip.left + 1) / 2;
+        size_t xCenter = clip.left + radius + 1;
+        size_t yCenter = clip.top + radius + 1;
+
+        circle circ = {xCenter, yCenter, radius};
 
         vector<direction> directions;
         int width = Matrix::columns(imgs[0]);

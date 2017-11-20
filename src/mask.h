@@ -3,80 +3,76 @@
 
 #include <iostream>
 #include "matrix.h"
+#include "utils.h"
 
 using namespace std;
 
 namespace Mask {
-    struct circle {
-        circle(int x, int y, int r) : xCenter(x), yCenter(y), radius(r) {}
 
-        int xCenter;
-        int yCenter;
-        int radius;
+    struct rect {
+        size_t top;
+        size_t left;
+        size_t bottom;
+        size_t right;
     };
 
+    struct mask {
+        matrix<bool> img;
+        rect clip;
+    };
+
+    mask load_mask(const std::string& fname);
+
     template<typename T>
-    circle get_center_and_radius(const matrix<T> &mask) {
-        int leftColumn = Matrix::columns(mask) - 1;
-        int rightColumn = 0;
-        int upperRow = Matrix::rows(mask) - 1;
-        int lowerRow = 0;
-
-        for (int i = 0; i < Matrix::rows(mask); i++) {
-            for (int j = 0; j < Matrix::columns(mask); j++) {
-                if (mask[i][j] > 250) {
-                    if (j < leftColumn) leftColumn = j;
-                    if (j > rightColumn) rightColumn = j;
-                    if (i < upperRow) upperRow = i;
-                    if (i > lowerRow) lowerRow = i;
-                }
-            }
+    matrix<T> apply_clip(const matrix<T>& mx, const mask& msk) {
+        const rect& clip = msk.clip;
+        size_t height = 1 + clip.bottom - clip.top;
+        size_t width = 1 + clip.right - clip.left;
+        matrix<T> res;
+        for (size_t i = 0; i < height; ++i) {
+            const row<T>& r = mx[i + clip.top];
+            auto start = r.begin() + clip.left;
+            auto end = start + width;
+            res.push_back(row<T>(start, end));
         }
-
-        int radius = (rightColumn - leftColumn + 1) / 2;
-        int xCenter = leftColumn + radius + 1;
-        int yCenter = upperRow + radius + 1;
-
-        return circle(xCenter, yCenter, radius);
+        return res;
     }
 
-/**
- * Apply a mask to an image, returning a matrix adjusted to the mask size. The
- * elements outside de mask are filled with zeros.
- *
- * @pre The image and mask must have same dimensions.
- * @tparam matrix<T>
- * @param img the image matrix, mask the mask matrix
- */
     template<typename T>
-    matrix<T> apply_mask(const matrix<T> &img, const matrix<T> &mask) {
-        assert(Matrix::rows(img) == Matrix::rows(mask) && Matrix::columns(img) == Matrix::columns(mask));
-
-        int leftColumn = Matrix::columns(img) - 1;
-        int rightColumn = 0;
-        int upperRow = Matrix::rows(img) - 1;
-        int lowerRow = 0;
-
-        for (int i = 0; i < Matrix::rows(img); i++) {
-            for (int j = 0; j < Matrix::columns(img); j++) {
-                if (mask[i][j] > 250) {
-                    if (j < leftColumn) leftColumn = j;
-                    if (j > rightColumn) rightColumn = j;
-                    if (i < upperRow) upperRow = i;
-                    if (i > lowerRow) lowerRow = i;
-                }
-            }
+    matrix<T> restore_clip(const matrix<T>& mx, const mask& msk) {
+        const rect& clip = msk.clip;
+        size_t height = msk.img.size();
+        size_t width = msk.img[0].size();
+        matrix<T> res(clip.top, row<T>(width, 0));
+        for (const row<T>& r : mx) {
+            row<T> new_r(clip.left);
+            new_r.insert(new_r.end(), r.begin(), r.end());
+            new_r.resize(width, 0);
+            res.push_back(new_r);
         }
+        res.resize(height, row<T>(width, 0));
+        return res;
+    }
 
-        int resultRows = lowerRow - upperRow + 1;
-        int resultColumns = rightColumn - leftColumn + 1;
-        matrix<T> result(resultRows, row<T>(resultColumns));
-        for (int i = 0; i < resultRows; i++) {
-            for (int j = 0; j < resultColumns; j++) {
-                if (mask[upperRow + i][leftColumn + j] > 250)
-                    result[i][j] = img[upperRow + i][leftColumn + j];
-                else
+    /**
+     * Apply a mask to an image, returning a matrix adjusted to the mask size. The
+     * elements outside the mask are filled with zeros.
+     *
+     * @pre The image and mask must have same dimensions.
+     * @tparam matrix<T>
+     * @param img the image matrix, mask the mask matrix
+     */
+    template<typename T>
+    matrix<T> apply_mask(const matrix<T> &img, const mask& msk) {
+        assert(Matrix::rows(img) == Matrix::rows(msk.img)
+               && Matrix::columns(img) == Matrix::columns(msk.img));
+
+        matrix<T> result(img);
+        for (size_t i = 0; i < result.size(); i++) {
+            for (size_t j = 0; j < result[0].size(); j++) {
+                if (!msk.img[i][j]) {
                     result[i][j] = 0;
+                }
             }
         }
 

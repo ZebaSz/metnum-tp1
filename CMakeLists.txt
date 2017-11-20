@@ -7,6 +7,7 @@ set(SOURCE_FILES
         src/plu.h
         src/cholesky.h
         src/mask.h
+        src/mask.cpp
         src/calibration.h
         src/cholesky.h
         src/reconstruct3d.h
@@ -21,4 +22,4 @@ add_library(metnum-tp1-base ${PPMLOADER_FILES} ${SOURCE_FILES})
 add_executable(procesar src/main.cpp)
 target_link_libraries (procesar metnum-tp1-base)
 
-#add_subdirectory(test)
+add_subdirectory(test)
