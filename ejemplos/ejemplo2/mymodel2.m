@@ -10,38 +10,51 @@ function mymodel2()
   p = 1;
   q = 1;
 
+  for y = 1:height
+    for x = 1:width
+      dicc(y,x) = q;
+      q = q+1;
+    end
+  end
+
   for y = 1:height-1
     for x = 1:width-1
       nx = N(y,x,1);
       ny = N(y,x,2);
       nz = N(y,x,3);
-      if (nz > 0.001)
-        if (y == height-1 || x == width-1)
-          M(p,q) = -nz;
-          v(q) = -nx;
-          dicc(y,x) = q;
-          m(p+1,q) = 0;
-          dicc(y,x+1) = q;
+      if (nz > 0.1 || nz < -0.1)
+        q = dicc(y,x);
+        M(p,q) = -nz;
+        v(p) = -nx;
+        M(p+1,q) = -nz;
 
-          m(p,q+1) = -nz;
-          v(q+1) = ny;
-          m(p+height,q+1) = 0;
-          dicc(y+1,x) = q+1;
-         else
-          m(p,q) = -nz;
-          v(q) = nx;
-          dicc(y,x) = q;
-          m(p+1,q) = nz;
-          dicc(y,x+1) = q;
+        v(p+1) = -ny;
+        q = dicc(y,x+1);
+        M(p,q) = nz;
 
-          m(p,q+1) = -nz;
-          v(q+1) = ny;
-          m(p+height,q+1) = nz;
-          dicc(y+1,x) = q+1;
-        end
-        q = q+2;
+        q = dicc(y+1,x);
+        M(p+1,q) = nz;
+      else
+        % if (nx == 0)
+        %   M(p,q) = 1;
+        %   v(p) = 1;
+        %   M(p+1,q) = 1;
+        % else
+        %   M(p,q) = 1;
+        %   v(p) = nx;
+        %   M(p+1,q) = 1;
+        % end
+        % if (ny == 0)
+        %   M(p,q+1) = 1;
+        %   v(q+1) = 1;
+        %   M(p+height,q+1) = 1;
+        % else
+        %   M(p,q+1) = 1;
+        %   v(q+1) = ny;
+        %   M(p+height,q+1) = 1;
+        % end
       end
-      p = p+1;
+      p = p+2;
     end
   end
 
@@ -52,7 +65,7 @@ function mymodel2()
   for y = 1:height-1
     for x = 1:width-1
       nz = N(y,x,3);
-      if (nz <= 0.001)
+      if (nz <= 0.1 && nz >= -0.1)
         sol(y,x) = 0;
       else
         q = dicc(y,x);
