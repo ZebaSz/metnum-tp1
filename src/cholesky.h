@@ -89,8 +89,6 @@ sparse_matrix sparse_cholesky_factorization(sparse_matrix& mx) {
             }
             if (L.get(j,j) != 0) {
                 L.set(j, i, (1/L.get(j,j))*(mx.get(j,i) - sumOfL));
-            } else {
-                L.set(j, i, 1);
             }
         }
     }
