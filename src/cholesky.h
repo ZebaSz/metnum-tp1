@@ -20,7 +20,11 @@ matrix<T> cholesky_factorization(const matrix<T>& mx) {
 
     L[0][0] = sqrt(mx[0][0]);
     for (size_t j = 1; j < n; ++j) {
-        L[j][0] = mx[j][0] / L[0][0];
+        if (L[0][0] != 0) {
+            L[j][0] = mx[j][0] / L[0][0];
+        } else {
+            L[j][0] = 1;
+        }
     }
 
     for (size_t i = 1; i < n-1; ++i) {
@@ -48,7 +52,11 @@ matrix<T> cholesky_factorization(const matrix<T>& mx) {
                 sum_cols_ij = t;
             }
 
-            L[j][i] = (mx[j][i] - sum_cols_ij) / L[i][i];
+            if (L[i][i] != 0) {
+                L[j][i] = (mx[j][i] - sum_cols_ij) / L[i][i];
+            } else {
+                L[j][i] = 1;
+            }
         }
     }
     T sum_Lnk = 0;
@@ -79,7 +87,11 @@ sparse_matrix sparse_cholesky_factorization(sparse_matrix& mx) {
             for (auto row = column.begin(); row != column.end() && row->first < j; ++row) {
                 sumOfL += L.get(row->first, j) * L.get(row->first, i);
             }
-            L.set(j, i, (1/L.get(j,j))*(mx.get(j,i) - sumOfL));
+            if (L.get(j,j) != 0) {
+                L.set(j, i, (1/L.get(j,j))*(mx.get(j,i) - sumOfL));
+            } else {
+                L.set(j, i, 1);
+            }
         }
     }
     L.transponse();

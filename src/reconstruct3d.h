@@ -14,10 +14,10 @@ struct options {
     bool maskOptimization;
 };
 
-struct sparseMatrixVAndValidPixels{
+struct sparseMatrixVAndDicc{
     sparse_matrix matrix;
     row<double> v;
-    row<size_t> validPixels;
+    row< row< size_t > > Dicc;
 };
 
 matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, const direction &s3) {
@@ -53,20 +53,18 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
     for (size_t i = 0; i < height; i++) {
         row<row<double>> r;
         for (size_t j = 0; j < width; j++) {
-            if (opts.maskOptimization && (i1[i][j] == 0 && i2[i][j] == 0 && i3[i][j] == 0)) {
-                r.push_back({0, 0, 0}); //TODO: revisen esto
+            //(5)
+            row<double> m = Matrix::solvePLUSystem(sm.P, sm.L, sm.U, {i1[i][j], i2[i][j], i3[i][j]});
+            //(6)
+            double mNorm = Matrix::twoNorm(m);
+            if(mNorm != 0) {
+                m[0] /= mNorm;
+                m[1] /= mNorm;
+                m[2] /= mNorm;
             } else {
-                //(5)
-                row<double> m = Matrix::solvePLUSystem(sm.P, sm.L, sm.U, {i1[i][j], i2[i][j], i3[i][j]});
-                //(6)
-                double mNorm = Matrix::twoNorm(m);
-                if(mNorm != 0) {
-                    m[0] /= mNorm;
-                    m[1] /= mNorm;
-                    m[2] /= mNorm;
-                }
-                r.push_back(m);
+                m = {0,0,0};
             }
+            r.push_back(m);
         }
         normal.push_back(r);
     }
@@ -74,56 +72,53 @@ matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &
     return normal;
 }
 
-sparseMatrixVAndValidPixels calculateM(const matrix<row<double>> &n) {
+sparseMatrixVAndDicc calculateM(const matrix<row<double>> &n) {
     size_t height = n.size();
     size_t width = n[0].size();
     size_t n_size = width * height;
     sparse_matrix M(2*n_size, n_size);
-    size_t n_i = 0;
-    size_t column_number = 0;
-    vector<double> v;
+    row<double> v(2*n_size, 0);
+    row< row< size_t > > dicc(height, row<size_t>(width,0));
+    size_t p = 0;
+    size_t q = 0;
 
-    row<size_t> validPixels(0);
+    for(size_t x=0; x < width; x++) {
+        for (size_t y = 0; y < height; ++y) {
+            dicc[y][x] = q;
+            q++;
+        }
+    }
+    for(size_t x=0; x < width-1; x++) {
+        for (size_t y = 0; y < height-1; ++y) {
+            double nx = n[y][x][0];
+            double ny = n[y][x][1];
+            double nz = n[y][x][2];
+            if (nz > 0.1 || nz < -0.1) {
 
-    // En la construccion de la M hay que salvar los bordes que no tienen posicion borde+1.
-    for (size_t x = 0; x < width; x++) {
-        for (size_t y = 0; y < height - 1; y++) {
-            if (std::abs(n[y][x][2]) > 0.001) {
-                M.set(column_number, n_i, -n[y][x][2]); //le pongo -nz
-                M.set(column_number + 1, n_i, n[y][x][2]); //le pongo nz
-                v.push_back(-n[y][x][1]); //le pongo -ny
-                validPixels.push_back(column_number);
-                n_i++;
+                q = dicc[y][x];
+                // Seteamos los Zx,y de cada ecuacion
+                M.set(q,p,-nz);
+                M.set(q,p+1,-nz);
+
+                // Seteamos los valores de V para cada ecuacion
+                v[p] = -nx;
+                v[p+1] = -ny;
+
+                // Seteamos el valor de Zx+1,y para la primera ecuacion en M
+                q = dicc[y][x+1];
+                M.set(q,p,nz);
+
+                // Seteamos el valor de Zx,y+1 para la segunda ecuacion en M
+                q = dicc[y+1][x];
+                M.set(q,p+1,nz);
+
+                p += 2;
             }
-            column_number++;
+
         }
     }
 
-
-    column_number = 0;  // arrancamos de nuevo de la columa 0, pero usamos un offset de filas
-
-    for (size_t x = 0; x < width - 1; x++) {
-        for (size_t y = 0; y < height; y++) {
-            if (std::abs(n[y][x][2]) > 0.001) {
-                M.set(column_number, n_i, -n[y][x][2]); //le pongo -nz
-                M.set(column_number + height, n_i, n[y][x][2]); //le pongo nz
-                v.push_back(-n[y][x][0]); //le pongo -nx
-                n_i++;
-            }
-            column_number++;
-        }
-    }
-
-    M.resizeHeight(n_i);
-
-    for (size_t pixel_number = 0; pixel_number < M.getCols(); ++pixel_number) {
-        auto & colI = M.column(pixel_number);
-        if (colI.empty()) {
-            M.removeColumn(pixel_number);
-        }
-    }
-
-    return {M,v,validPixels};
+    return {M,v,dicc};
 }
 
 vector<double> calculateV(const matrix<row<double>> &n, const row<size_t> &rowsOfZeros) {
@@ -167,11 +162,12 @@ row<double> addZeros(row<double> &z, row<size_t> &rowsWithZeros) {
     return result;
 }
 
-matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width) {
+matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width, row< row< size_t > > dicc) {
     matrix<double> result(height, row<double>(width));
     for (size_t i = 0; i < height; ++i) {
         for (size_t j = 0; j < width; ++j) {
-            result[i][j] = z[i + j * height];
+            size_t posInZ = dicc[i][j];
+            result[i][j] = z[posInZ];
         }
     }
     return result;
@@ -180,7 +176,7 @@ matrix<double> solutionToMatrix(row<double> &z, size_t height, size_t width) {
 //Aqui viene lo bueno jovenes, I cho cho choleskyou
 matrix<double> findDepth(const matrix<row<double>> &normalField) {
     std::cout << "Antes de calcular M" << std::endl;
-    sparseMatrixVAndValidPixels mAndVectorOfRowsOfZeros = calculateM(normalField);
+    sparseMatrixVAndDicc mAndVectorOfRowsOfZeros = calculateM(normalField);
 
     //std::cout << "Despues de calcular M y antes de V" << std::endl;
     //vector<double> v = calculateV(normalField, mAndVectorOfRowsOfZeros.rowsOfZeros);
@@ -206,8 +202,7 @@ matrix<double> findDepth(const matrix<row<double>> &normalField) {
     // z tiene forma (z11,z12,...,z1h,z21,z22,...,z2h,z31,...,zwh)
     size_t height = normalField.size();
     size_t width = normalField[0].size();
-    row<double> zWithZeros = addZeros(z, mAndVectorOfRowsOfZeros.validPixels);
-    matrix<double> d = solutionToMatrix(zWithZeros, height, width);
+    matrix<double> d = solutionToMatrix(z, height, width, mAndVectorOfRowsOfZeros.Dicc);
 
     std::cout << "Despues de transformar vector a matriz" << std::endl;
     return d;

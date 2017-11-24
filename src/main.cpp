@@ -96,10 +96,9 @@ int main(int argc, char** argv) {
         Utils::saveMatrix3dFiles(normal, outputName);
 #endif
     //----DEPTH
-    /*
     matrix<double> depth = findDepth(normal);
+    //Mask::apply_mask(depth,msk);
     Utils::saveMatrixFile(depth, outputName + ".depth.csv");
-     */
     //----END
     return 0;
 }

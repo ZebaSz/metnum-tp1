@@ -22,38 +22,20 @@ function mymodel2()
       nx = N(y,x,1);
       ny = N(y,x,2);
       nz = N(y,x,3);
-      if (nz > 0.1 || nz < -0.1)
-        q = dicc(y,x);
-        M(p,q) = -nz;
-        v(p) = -nx;
-        M(p+1,q) = -nz;
 
-        v(p+1) = -ny;
-        q = dicc(y,x+1);
-        M(p,q) = nz;
+      q = dicc(y,x);
+      M(p,q) = -nz;
+      M(p+1,q) = -nz;
 
-        q = dicc(y+1,x);
-        M(p+1,q) = nz;
-      else
-        % if (nx == 0)
-        %   M(p,q) = 1;
-        %   v(p) = 1;
-        %   M(p+1,q) = 1;
-        % else
-        %   M(p,q) = 1;
-        %   v(p) = nx;
-        %   M(p+1,q) = 1;
-        % end
-        % if (ny == 0)
-        %   M(p,q+1) = 1;
-        %   v(q+1) = 1;
-        %   M(p+height,q+1) = 1;
-        % else
-        %   M(p,q+1) = 1;
-        %   v(q+1) = ny;
-        %   M(p+height,q+1) = 1;
-        % end
-      end
+      v(p) = -nx;
+      v(p+1) = -ny;
+
+      q = dicc(y,x+1);
+      M(p,q) = nz;
+
+      q = dicc(y+1,x);
+      M(p+1,q) = nz;
+
       p = p+2;
     end
   end
