@@ -1,6 +1,7 @@
 #include <stdexcept>
 #include <tuple>
 #include <iostream>
+#include <algorithm>
 #include "utils.h"
 
 #define R_GRAYSCALE 0.25
@@ -30,6 +31,8 @@ namespace Utils {
             }
             result.push_back(r);
         }
+
+        std::reverse(result.begin(), result.end());
 
         delete [] data;
         return result;
