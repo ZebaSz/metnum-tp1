@@ -1,11 +1,9 @@
 function show_model()
 
 %%
-fnameZ = 'buda.depths.dat';
-% fnameN = 'buda.normals.dat';
+fname = 'caballo.depth.csv';
 
-% N = read_normals(fnameN);
-Z = read_depths(fnameZ);
+Z = dlmread(fname);
 
 [height,width] = size(Z);
 
@@ -13,6 +11,5 @@ Z = read_depths(fnameZ);
 
 figure,surf(X,Y,Z);
 figure,mesh(X,Y,Z);
-
 
 end
