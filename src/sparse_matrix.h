@@ -65,14 +65,14 @@ class sparse_matrix {
             return nc;
         };
 
-        row<double> transposedProductWithVector(const row<double> &b) {
+        row<double> transposedProductWithVector(const row<double> &b) const {
             row<double> result(cols, 0);
 
             for (size_t i = 0; i < cols; ++i) {
-                bucket& column = matrix[i];
+                auto& column = matrix[i];
                 double sum = 0;
-                for (auto column_row = column.begin(); column_row != column.end(); ++column_row) {
-                    sum += column_row->second * b[column_row->first];
+                for (auto& column_row : column) {
+                    sum += column_row.second * b[column_row.first];
                 }
                 result[i] = sum;
             }
@@ -80,22 +80,24 @@ class sparse_matrix {
             return result;
         }
 
-        sparse_matrix transposedByNotTransposedProduct() {
+        sparse_matrix transposedByNotTransposedProduct() const {
             sparse_matrix result(cols, cols);
             for (size_t i = 0; i < cols; ++i) {
-                bucket& column = matrix[i];
+                auto& column = matrix[i];
                 for (size_t j = 0; j <= i; ++j) {
-                    bucket& another_column = matrix[j];
+                    auto & another_column = matrix[j];
                     double sum = 0;
-                    for (auto column_row = column.begin(); column_row != column.end(); ++column_row) {
-                        auto another_column_row = another_column.find(column_row->first);
+                    for (auto& column_row : column) {
+                        auto another_column_row = another_column.find(column_row.first);
                         if(another_column_row != another_column.end()) {
-                            sum += column_row->second * another_column_row->second;
+                            sum += column_row.second * another_column_row->second;
                         }
                     }
-                    result.set(i,j, sum);
-                    if (i != j) {
-                        result.set(j, i, sum);
+                    if(sum != 0) {
+                        result.matrix[i][j] = sum;
+                        if (i != j) {
+                            result.matrix[j][i] = sum;
+                        }
                     }
                 }
             }
@@ -149,24 +151,16 @@ class sparse_matrix {
             return matrix[col];
         }
 
-        sparse_matrix fullTranspose() {
+        sparse_matrix fullTranspose() const {
             sparse_matrix transposedMatrix(cols,rows);
             for (size_t i = 0; i < cols; ++i) {
-                bucket& column = matrix[i];
-                for (auto columnIt = column.begin(); columnIt != column.end() ; columnIt++) {
-                    transposedMatrix.set(columnIt->first, i, columnIt->second);
+                auto& column = matrix[i];
+                for (auto& cell : column) {
+                    auto& otherColumn = transposedMatrix.matrix[cell.first];
+                    otherColumn[i] = cell.second;
                 }
             }
             return transposedMatrix;
-        }
-
-        void removeColumn(size_t colNumber) {
-            matrix.erase(matrix.begin()+colNumber);
-            cols -= 1;
-        }
-
-        void resizeHeight(size_t actualRows) {
-            rows = actualRows;
         }
 
 private:

@@ -1,12 +1,10 @@
 function show_depths()
 
-%% 
-fname = 'buda.depths.dat';
+filename = 'caballo.depth.csv'; % Apuntar al archivo de texto con sus Z
+Z = dlmread(filename);
 
-Z2 = read_depths(fname);
-
-imagesc(Z2)
+figure
+imagesc(Z)
 colormap(gray)
 
-fclose(fp);
 end
