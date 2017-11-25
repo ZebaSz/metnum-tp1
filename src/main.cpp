@@ -85,6 +85,7 @@ int main(int argc, char** argv) {
     vector<matrix<double>> imgs = loadGrayImages(figureFiles);
     for(auto& img : imgs) {
         img = Mask::apply_mask(img, msk);
+        img = Mask::apply_clip(img, msk);
     }
     //----NORMAL-FIELD
     // TODO: CHOOSE THE BEST 3
@@ -97,6 +98,7 @@ int main(int argc, char** argv) {
 #endif
     //----DEPTH
     matrix<double> depth = findDepth(normal);
+    depth = Mask::restore_clip(depth, msk);
     //Mask::apply_mask(depth,msk);
     Utils::saveMatrixFile(depth, outputName + ".depth.csv");
     //----END

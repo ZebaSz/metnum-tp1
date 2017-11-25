@@ -15,11 +15,11 @@ set(SOURCE_FILES
 
 set(PPMLOADER_FILES src/ppmloader/ppmloader.cpp)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -Wall -pedantic")
 
 add_library(metnum-tp1-base ${PPMLOADER_FILES} ${SOURCE_FILES})
 
 add_executable(procesar src/main.cpp)
 target_link_libraries (procesar metnum-tp1-base)
 
-add_subdirectory(test)
+#add_subdirectory(test)
