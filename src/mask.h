@@ -23,6 +23,14 @@ namespace Mask {
 
     mask load_mask(const std::string& fname);
 
+    /**
+     * Clip an image's size based on a mask.
+     *
+     * @tparam T the content of the matrix
+     * @param img the full matrix
+     * @param msk the mask
+     * @return the trimmed matrix
+     */
     template<typename T>
     matrix<T> apply_clip(const matrix<T>& mx, const mask& msk) {
         const rect& clip = msk.clip;
@@ -38,6 +46,16 @@ namespace Mask {
         return res;
     }
 
+    /**
+     * Restore an image's size based on a previously applied mask.
+     * Empty spaces are filled with a default value.
+     *
+     * @tparam T the content of the matrix
+     * @param img the masked matrix
+     * @param msk the mask
+     * @param def the value to fill the matrix with (0 for numeric values by default)
+     * @return the expanded matrix
+     */
     template<typename T>
     matrix<T> restore_clip(const matrix<T>& mx, const mask& msk, T def = static_cast<T>(0)) {
         const rect& clip = msk.clip;
@@ -45,7 +63,7 @@ namespace Mask {
         size_t width = msk.img[0].size();
         matrix<T> res(clip.top, row<T>(width, def));
         for (const row<T>& r : mx) {
-            row<T> new_r(clip.left);
+            row<T> new_r(clip.left, def);
             new_r.insert(new_r.end(), r.begin(), r.end());
             new_r.resize(width, def);
             res.push_back(new_r);
@@ -55,12 +73,15 @@ namespace Mask {
     }
 
     /**
-     * Apply a mask to an image, returning a matrix adjusted to the mask size. The
-     * elements outside the mask are filled with zeros.
+     * Apply a mask to an image. The matrix is not resized.
+     * Empty spaces are filled with a default value.
      *
      * @pre The image and mask must have same dimensions.
-     * @tparam matrix<T>
-     * @param img the image matrix, mask the mask matrix
+     * @tparam T the content of the matrix
+     * @param img the matrix to mask
+     * @param msk the mask
+     * @param def the value to fill the matrix with (0 for numeric values by default)
+     * @return the masked matrix
      */
     template<typename T>
     matrix<T> apply_mask(const matrix<T> &img, const mask& msk, T def = static_cast<T>(0)) {
