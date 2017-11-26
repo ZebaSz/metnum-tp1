@@ -76,8 +76,28 @@ El siguiente paso es calcular la profundidad de cada pixel de la imagen. Para el
 
 Es necesario notar que $M$, la matriz de este sistema, es una matriz esparsa. La manera en la que la está dispuesta la información es la siguiente:
 
-$M$ tiene dimensión $2n \times n$. En las primeras $n$ filas se reflejan las ecuaciones pertenecientes a $n_y$ y se forman dos diagonales contiguas que representan la vecindad vertical de los píxeles. En las segundas $n$ filas se reflejan las ecuaciones pertenecientes a $n_x$ y se forman dos diagonales separadas por el alto de la imagen que representan la vecindad horizontal de los píxeles.
+$M$ tiene dimensión $2n \times n$. Esto es porque necesitamos representar 2 ecuaciones por cada pixel, por lo que cada columna de $M$ referirá a $1$ pixel de la imagen y cada fila a una ecuación. Dado que cada pixel utiliza en las ecuaciones a los pixels de la derecha y de abajo, cada columna tendrá a lo sumo 4 elementos (dos por sus propias ecuaciones, una vez por el pixel de su izquierda y otra por el de arriba). Para el caso de los pixels de los bordes derechos e inferiores, solamente tendrán 2 elementos, que se dan por los pixeles que estan en la anteúltima columna y anteúltima fila de la imagen correspondientemente. El último pixel, el que se encuentra en la esquina inferior derecha, no tendrá ningún elemento en su respectiva columna.
 
-Esta disposición de los datos provoca que cada columna de $M$ contenga a lo sumo 4 elementos. Nuestra implementación consiste en considerar a esta matriz como un tipo especial de matriz (la esparsa), para la cual no se tiene un arreglo bidimensional como sería el caso habitual sino un vector de hashmap, donde cada elemento del vector representa una columna. Cada hashmap contendrá entonces 4 elementos o menos. Esto permite que al querer multiplicar una columna por otra (como ocurre en el caso de querer calcular $M^tM$) no sea necesario recorrer toda la columna sino únicamente los elementos distintos de 0. Esta optimización es crucial para el desarrollo del algoritmo a nivel temporal.
+
+Nuestra implementación consiste en considerar a esta matriz como un tipo especial de matriz (la esparsa), para la cual no se tiene un arreglo bidimensional como sería el caso habitual sino un vector de hashmap, donde cada elemento del vector representa una columna. Cada hashmap contendrá entonces 4 elementos o menos. Esto permite que al querer multiplicar una columna por otra (como ocurre en el caso de querer calcular $M^tM$) no sea necesario recorrer toda la columna sino únicamente los elementos distintos de 0. Esta optimización es crucial para el desarrollo del algoritmo a nivel temporal. Además, por cuestiones implementativas, se decidió utilizar un diccionario que mapea cada pixel a una columna, para así poder ubicar rápidamente en $z$ (una vez resuelto el sistema) el valor correspondiente a cada pixel.
 
 Luego resta resolver el sistema de la ecuación 15. Para ello aplicamos la factorización de Cholesky, que también resulta optimizada debido a tratarse de una matriz esparsa, ya que para el cálculo de la matriz triangular inferior es necesario recorrer lo calculado en las iteraciones previas, y al utilizar la implementación de matriz esparsa definida anteriormente se logra recorrer la matriz solamente en los elementos distintos de 0.
+
+
+\subsection{Experimentación}
+
+En este trabajo se realizaron una serie de experimentaciones para poder responder preguntas planteadas en el enunciado. Se explica el detalle de las respuestas obtenidas en las siguientes subsecciones, pero a modo de introducción de esa parte indicamos que no se obtuvieron respuestas para todas las respuestas, pero las pruebas sirvieron para acercarse a una idea de las mismas.
+
+\subsubsection{Análisis cuantitativo}
+
+
+
+\subsubsection{Análisis cualitativo}
+
+\paragraph{Luces por calibración VS Luces de la cátedra}
+
+\paragraph{Calibración y repercusiones}
+
+\paragraph{Elección de las luces}
+
+A lo largo del desarrollo, se observó que utilizando las mismas luces se obtenian diferentes calidades de modelos 3D para las distintas imágenes.
