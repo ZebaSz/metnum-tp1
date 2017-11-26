@@ -82,7 +82,19 @@ En este trabajo se realizaron una serie de experimentaciones para poder responde
 
 \subsubsection{Análisis cuantitativo}
 
+Con motivo de la construcción del campo normal se vio la necesidad de despejar el vector $m$ de la ecuación 5. El método conocido para esto es la \textit{Eliminación Gaussiana} (EG). Este método se aplica para resolver sistemas lineales de la forma: $Ax = b$. El método de \textit{Eliminación Gaussiana}, consiste en escalonar la matriz aumentada del sistema.
 
+El problema que tiene este método es que no puede ser utilizado si en la diagonal de la matriz se encuentran ceros. Para evitar este problema se elige como elemento para hacer ceros (el cual recibe el nombre de elemento pivotal o simplemente pivote) como el elemento mayor en valor absoluto de entre todos los candidatos. A este procedimiento se le llama pivoteo parcial y aplicado a la \textit{Eliminación Gaussiana}, nos dá el llamado método de \textit{Eliminación Gaussiana con pivoteo}.
+
+En este caso, se hace uso justamente de la \textit{Eliminación Gaussiana con pivoteo} donde se elige como elemento al mayor dentro de la columna. Esto garantiza que no hayan ceros en la diagonal, y al elegir al máximo se reducen lo más posible los errores numéricos.
+
+Al momento de calcular las profundidades de los píxeles es necesario la utilización del método de \textit{Factorización de Cholesky} (CL). Cuando es aplicable, la descomposición de Cholesky es dos veces más eficiente que la descomposición LU. Una vez obtenida la factorización se puede fácilmente resolver el sistema de equaciónes pero no es posible obtener la factorización en cualquier caso.
+
+El requisito para poder aplicar esta factorización es que la matriz sea simétrica definida positiva. En el caso de este trabajo práctico, la matriz en cuestión es producto de una matriz por su traspuesta, por lo que es sumétrica definida positiva ya que
+
+\begin{center}
+$x^tM^tMx = (Mx)^t(Mx) = ||Mx||^2 > 0$
+\end{center}
 
 \subsubsection{Análisis cualitativo}
 
