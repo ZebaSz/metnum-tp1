@@ -5,6 +5,10 @@
 
 #define SAVE_NORMAL true
 
+#define IMG_0 0
+#define IMG_1 4
+#define IMG_2 10
+
 struct args {
     bool valid;
     char* ref_fname = nullptr;
@@ -131,21 +135,20 @@ int main(int argc, char** argv) {
         img = Mask::apply_clip(img, msk);
     }
     //----NORMAL-FIELD
-    // TODO: CHOOSE THE BEST 3
     std::string outputName = getOutputName(figureName);
     std::cout << "Calculando el campo normal de la figura " << outputName << std::endl;
     matrix<row<double>> normal = normalField(
-            imgs[0], imgs[1], imgs[2],
-            calibrations[0], calibrations[1], calibrations[2]);
+            imgs[IMG_0], imgs[IMG_1], imgs[IMG_2],
+            calibrations[IMG_0], calibrations[IMG_1], calibrations[IMG_2]);
 #if SAVE_NORMAL
     std::cout << "Guardando el campo normal de la figura " << outputName << std::endl;
-    Utils::saveMatrix3dFiles(normal, outputName);
+    Utils::saveMatrix3dFiles(Mask::restore_clip(normal, msk, {0,0,0}), outputName);
 #endif
     //----DEPTH
     std::cout << "Estimando las profundidades de la figura " << outputName << std::endl;
     matrix<double> depth = findDepth(normal);
     depth = Mask::restore_clip(depth, msk);
-    depth = Mask::apply_mask(depth,msk);
+    depth = Mask::apply_mask(depth, msk);
     std::cout << "Guardando las de la figura " << outputName << std::endl;
     Utils::saveMatrixFile(depth, outputName + ".depth.csv");
     //----END

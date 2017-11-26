@@ -45,7 +45,7 @@ namespace Mask {
         size_t width = msk.img[0].size();
         matrix<T> res(clip.top, row<T>(width, def));
         for (const row<T>& r : mx) {
-            row<T> new_r(clip.left);
+            row<T> new_r(clip.left, def);
             new_r.insert(new_r.end(), r.begin(), r.end());
             new_r.resize(width, def);
             res.push_back(new_r);
