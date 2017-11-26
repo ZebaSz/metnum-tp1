@@ -1,9 +1,48 @@
 \section{Futura experimentación}
 
-La experimentación planeada consta de
+A lo largo del trabajo encontramos algunos detalles que consideramos
+fuera del marco de este trabajo, ya sea por complejidad o falta de tiempo.
+Sin embargo, nos gustaría mencionar algunas de las cosas que destacamos como
+posible experimentación futura:
 
 \begin{itemize}
-\item Distintos métodos para la realizar la calibracion
-\item Restringir las dimensiones de las imágenes mediante las máscaras: al aplicar las máscaras a las imágenes pueden achicarse las matrices a procesar obteniendo una mejora en la performance general.
-\item Variar métodos para la selección de imágenes: tomar distintos criterios para poder conseguir una mayor precisión a la hora de calcular las normales. Un criterio posible es analizar los puntos mas intensos de la imágen, y considerar que la misma pueda traer imprecisión si estos puntos están alejados.
+	\item La calibración utilizada para este trabajo es muy sencilla, pero como
+	se demostró es bastante sensible y falible.
+
+	Entre otras cosas, consideramos agregar una lógica de area a la calibración,
+	en lugar de hacerla puntual: la misma determinaría el area más iluminada,
+	reduciendo la probabilidad de ser afectado por un punto de intensidad
+	inusual. Luego, se buscaría el máximo de este area, o se tomaría el
+	punto central, y se tomaría la normal de este para determinar la
+	dirección de la luz.
+
+	\item Si bien calculamos todas las direcciones de luz, en ningún momento
+	utilizamos más de 3, y las mismas están actualmente fijas en el código.
+
+	Nos gustaría poder determinar dinámicamente el conjunto de luces con mayor
+	probabilidad de producir un resultado confiable. Esto requiere determinar
+	alguna heurística, ya sea:
+
+	\begin{itemize}
+		\item A nivel general, utilizando la distancia de los puntos más iluminados/el
+		ángulo entre las direcciones de la luz: esto requiere un análisis sobre
+		qué distancias/ángulos son los más eficientes, que nosotros suponemos no
+		deben estar demasiado cerca para que cada luz provea información nueva,
+		pero tampoco tan alejados porque se corre el riesgo de introducir ruido;
+
+		\item A nivel individual, dependiendo de la figura: esto es mucho más complejo
+		para el cual no formulamos una teoría, porque puede variar mucho dependiendo
+		de los detalles de la figura, y podríamos terminar resaltando datos poco
+		relevantes y perdiendo la forma general de la figura.
+	\end{itemize}
+
+	\item En nuestro trabajo utilizamos 3 luces para generar el campo normal.
+	Si bien, asumiendo que las luces fueron elegidas correctamente, esto provee
+	información suficiente para reconstruir el objeto, nos gustaría saber
+	cuánto ruido o cuánta precisión adquiere el sistema al agregar más fuentes
+	de iluminación.
+
+	Sin embargo, nuestra intuición nos dice que esto no aportaría nada al sistema,
+	y estamos convencidos que cualquier mejora posible (si alguna)
+	no justificaría el costo de cómputo de aumentar la dimensión del sistema.
 \end{itemize}
