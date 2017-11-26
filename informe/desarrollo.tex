@@ -99,5 +99,26 @@ En este trabajo se realizaron una serie de experimentaciones para poder responde
 \paragraph{Calibración y repercusiones}
 
 \paragraph{Elección de las luces}
+\
 
-A lo largo del desarrollo, se observó que utilizando las mismas luces se obtenian diferentes calidades de modelos 3D para las distintas imágenes.
+A lo largo del desarrollo, se observó que utilizando las mismas luces se obtenian diferentes calidades de modelos 3D para las distintas imágenes. Esto generó dudas de si el algoritmo para la reconstrucción del modelo estaba bien hecho ya que supusimos que la calidad debería ser igual para todas si se usaba siempre las mismas luces, pero al ver que para algunas imagenes funcionaba mejor que para otras, se llegó a esta experimentación.
+
+Para el caso, se tomaron las imágenes del buda y del gato y se procedió a probar distintas combinaciones de luces, todas obtenidas en base a la calibración, las cuales son una por cada imagen de calibración.
+
+En las imágenes siguientes, se pueden observar los modelos (en las primeras dos) obtenidos utilizando las mismas luces (1, 2 y 3), mientras que en las segundas dos se muestran las profundidades del gato y del buda respectivamente.
+
+\includegraphics[width=.4\linewidth]{imagenes/gato_small_model_123.png}
+\includegraphics[width=.4\linewidth]{imagenes/buda_small_model_123.png}
+
+\includegraphics[width=.4\linewidth]{imagenes/gato_small_dephs_123.png}
+\includegraphics[width=.4\linewidth]{imagenes/buda_small_dephs_123.png}
+
+En esta primera comparación se notó que el modelo y las profundidades del gato tenían una forma mejor detallada que el buda, aunque sólo con esta primera idea no se obtuvo ninguna conclusión, por lo que se continuó con las luces 4, 5 y 6. Sin embargo, al querer utilizar ese conjunto de luces se obtuvieron resultados completamente vacíos. La conclusión a la que se llegó para poder explicar este suceso luego de realizar pruebas fijando una y después dos luces, y cambiando las otras, fue que las luces 3 y 5 son vectores que no son linealmente independientes, ya que dejando fijas esas luces siempre se obtenían modelos vacíos. La razón por la que se concluyó que las luces 3 y 5 no son $L.I.$ fue que al hacer eliminación gausseana, se obtenían filas de $0$s y eso es lo que luego generaría $0$s en las normales estimadas y por lo tanto en todo el modelo.
+
+Después de ese pequeño análisis, se precedió a realizar la generación de modelos 3D con las luces 7, 8 y 9 y los modelos obtenidos fueron los siguientes:
+
+\includegraphics[width=.4\linewidth]{imagenes/gato_small_model_789.png}
+\includegraphics[width=.4\linewidth]{imagenes/buda_small_model_789.png}
+
+\includegraphics[width=.4\linewidth]{imagenes/gato_small_dephs_789.png}
+\includegraphics[width=.4\linewidth]{imagenes/buda_small_dephs_789.png}
