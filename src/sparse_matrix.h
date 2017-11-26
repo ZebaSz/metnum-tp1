@@ -104,15 +104,21 @@ class sparse_matrix {
             return result;
         }
 
+        row<double> solveWithGaussianElimination(const row<double>& b) const {
+            sparse_matrix t = fullTranspose();
+            row<double> result(b.size(), 0);
+
+            return result;
+        }
 
         // Esta funcion asume que la matriz es cuadrada y triangular inferior.
-        row<double> solveCholeskySystem(row<double> b){
+        row<double> solveCholeskySystem(const row<double>& b) const {
             // Resuelvo Lz = b
             sparse_matrix transposedLower = fullTranspose();
             size_t z_size = b.size();
             row<double> z(z_size, 0);
             for (size_t i = 0; i < cols; ++i) {
-                bucket& column = transposedLower.matrix[i];
+                auto& column = transposedLower.matrix[i];
                 double sumOfRowI = 0;
                 double c = 0.0;
                 for (auto row_column = column.begin(); row_column != column.end() && row_column->first <= i; row_column++) {
@@ -131,7 +137,7 @@ class sparse_matrix {
             row<double> x(x_size, 0);
 
             for (size_t i = 0; i < cols; ++i) {
-                bucket& column = matrix[cols-1-i];
+                auto& column = matrix[cols-1-i];
                 double sumOfRowI = 0;
                 double c = 0.0;
                 for (auto row_column = column.rbegin(); row_column != column.rend(); row_column++) {

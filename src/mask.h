@@ -39,18 +39,18 @@ namespace Mask {
     }
 
     template<typename T>
-    matrix<T> restore_clip(const matrix<T>& mx, const mask& msk) {
+    matrix<T> restore_clip(const matrix<T>& mx, const mask& msk, T def = static_cast<T>(0)) {
         const rect& clip = msk.clip;
         size_t height = msk.img.size();
         size_t width = msk.img[0].size();
-        matrix<T> res(clip.top, row<T>(width, static_cast<T>(0)));
+        matrix<T> res(clip.top, row<T>(width, def));
         for (const row<T>& r : mx) {
             row<T> new_r(clip.left);
             new_r.insert(new_r.end(), r.begin(), r.end());
-            new_r.resize(width, static_cast<T>(0));
+            new_r.resize(width, def);
             res.push_back(new_r);
         }
-        res.resize(height, row<T>(width, static_cast<T>(0)));
+        res.resize(height, row<T>(width, def));
         return res;
     }
 
@@ -63,7 +63,7 @@ namespace Mask {
      * @param img the image matrix, mask the mask matrix
      */
     template<typename T>
-    matrix<T> apply_mask(const matrix<T> &img, const mask& msk) {
+    matrix<T> apply_mask(const matrix<T> &img, const mask& msk, T def = static_cast<T>(0)) {
         assert(Matrix::rows(img) == Matrix::rows(msk.img)
                && Matrix::columns(img) == Matrix::columns(msk.img));
 
@@ -71,7 +71,7 @@ namespace Mask {
         for (size_t i = 0; i < result.size(); i++) {
             for (size_t j = 0; j < result[0].size(); j++) {
                 if (!msk.img[i][j]) {
-                    result[i][j] = 0;
+                    result[i][j] = def;
                 }
             }
         }

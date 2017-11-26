@@ -354,14 +354,10 @@ namespace Matrix {
     }
 
     template<typename T>
-    matrix<T> identityMatrix(int size) {
-        matrix<T> mx;
-        for (int i = 0; i < size; ++i) {
-            row<T> r;
-            for (int j = 0; j < size; ++j) {
-                r.push_back(T((i == j) ? 1 : 0));
-            }
-            mx.push_back(r);
+    matrix<T> identityMatrix(size_t size) {
+        matrix<T> mx(size, row<T>(size, 0));
+        for (size_t i = 0; i < size; ++i) {
+            mx[i][i] = 1;
         }
         return mx;
     }

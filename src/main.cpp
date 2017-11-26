@@ -5,23 +5,37 @@
 
 #define SAVE_NORMAL true
 
-#define DEFAULT_OPTS options(false)
+struct args {
+    bool valid;
+    char* ref_fname = nullptr;
+    char* fig_fname = nullptr;
+    char* lights_fname = nullptr;
+};
 
 std::vector<matrix<double>> loadGrayImages(const std::vector<std::string>& files) {
     std::vector<matrix<double>> res;
-    for (auto it = files.begin(); it != files.end(); ++it) {
-        res.push_back(Utils::loadGrayImage(*it));
+    for (auto& file : files) {
+        res.push_back(Utils::loadGrayImage(file));
     }
     return res;
 }
 
 void printUsage() {
-    std::cerr << "Uso: ./procesar <lista_referencia.txt> <lista_figura.txt>\n"
-              << "\n"
-              << "Ejemplo: ./procesar mate.txt caballo.txt\n"
-              << "\n"
-              << "(el archivo lista_referencia.txt debe listar\n"
-              << "las imágenes de la esfera para usar al calibrar)\n"
+    std::cerr <<
+            "Uso: ./procesar -r <lista_referencia.txt> -f <lista_figura.txt>\n"
+            "\n"
+            "Ejemplo: ./procesar -r mate.txt -f caballo.txt\n"
+            "\n"
+            "(el archivo lista_referencia.txt debe listar\n"
+            "las imágenes de la esfera para usar al calibrar)\n"
+            "\n"
+            "Opciones disponibles:\n"
+            " -r - lista de figuras de calibración\n"
+            " -f - lista de figuras a procesar\n"
+            " -l - lista de luces pre-computadas\n"
+            "\n"
+            "Si las luces pre-computadas están disponibles,\n"
+            "se utilizan en lugar de las figuras de calibración."
               << std::endl;
 }
 
@@ -62,23 +76,52 @@ std::string getOutputName(const std::string &file) {
     return file.substr(pos, ext - pos);
 }
 
+args read_args(int argc, char** argv) {
+    args res;
+    for (int i = 0; i < argc - 1; ++i) {
+        std::string arg{argv[i]};
+        if(arg == "-l") {
+            res.lights_fname = argv[++i];
+        } else if(arg == "-r") {
+            res.ref_fname = argv[++i];
+        } else if(arg == "-f") {
+            res.fig_fname = argv[++i];
+        }
+    }
+    res.valid = res.fig_fname != nullptr
+                && (res.lights_fname != nullptr || res.ref_fname != nullptr);
+    return res;
+}
+
 int main(int argc, char** argv) {
-    if(argc != 3) {
+    args a = read_args(argc, argv);
+    if(!a.valid) {
         printUsage();
         return 1;
     }
-    std::string referenceName(argv[1]);
-    std::string figureName(argv[2]);
+    std::vector<direction> calibrations;
+
     //----CALIBRATION
-    std::string referenceMaskName;
-    std::vector<std::string> referenceFiles = getFileNames(referenceName, referenceMaskName);
-    Mask::mask referenceMask = Mask::load_mask(referenceMaskName);
-    vector<matrix<double>> references = loadGrayImages(referenceFiles);
-    for(auto& ref : references) {
-        ref = Mask::apply_mask(ref, referenceMask);
+    if(a.lights_fname != nullptr) {
+        std::string lightsName(a.lights_fname);
+        std::cout << "Cargando luces de " << lightsName << std::endl;
+        calibrations = Calibration::load_lights(lightsName);
+    } else {
+        std::string referenceName(a.ref_fname);
+        std::cout << "Cargando figuras de referencia de la lista " << referenceName << std::endl;
+        std::string referenceMaskName;
+        std::vector<std::string> referenceFiles = getFileNames(referenceName, referenceMaskName);
+        Mask::mask referenceMask = Mask::load_mask(referenceMaskName);
+        vector<matrix<double>> references = loadGrayImages(referenceFiles);
+        for (auto &ref : references) {
+            ref = Mask::apply_mask(ref, referenceMask);
+        }
+        std::cout << "Calibrando en base a la figura de referencia" << std::endl;
+        calibrations = Calibration::calibrate(references, referenceMask);
     }
-    vector<direction> calibrations = Calibration::calibrate(references, referenceMask);
     //----LOADING
+    std::string figureName(a.fig_fname);
+    std::cout << "Cargando figuras de la lista " << figureName << std::endl;
     std::string figureMaskName;
     std::vector<std::string> figureFiles = getFileNames(figureName, figureMaskName);
     Mask::mask msk = Mask::load_mask(figureMaskName);
@@ -90,16 +133,20 @@ int main(int argc, char** argv) {
     //----NORMAL-FIELD
     // TODO: CHOOSE THE BEST 3
     std::string outputName = getOutputName(figureName);
+    std::cout << "Calculando el campo normal de la figura " << outputName << std::endl;
     matrix<row<double>> normal = normalField(
             imgs[0], imgs[1], imgs[2],
-            calibrations[0], calibrations[1], calibrations[2], DEFAULT_OPTS);
+            calibrations[0], calibrations[1], calibrations[2]);
 #if SAVE_NORMAL
-        Utils::saveMatrix3dFiles(normal, outputName);
+    std::cout << "Guardando el campo normal de la figura " << outputName << std::endl;
+    Utils::saveMatrix3dFiles(normal, outputName);
 #endif
     //----DEPTH
+    std::cout << "Estimando las profundidades de la figura " << outputName << std::endl;
     matrix<double> depth = findDepth(normal);
     depth = Mask::restore_clip(depth, msk);
-    //Mask::apply_mask(depth,msk);
+    depth = Mask::apply_mask(depth,msk);
+    std::cout << "Guardando las de la figura " << outputName << std::endl;
     Utils::saveMatrixFile(depth, outputName + ".depth.csv");
     //----END
     return 0;

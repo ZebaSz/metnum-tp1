@@ -3,7 +3,8 @@
 
 #include "mask.h"
 
-struct direction{
+struct direction {
+    direction() = default;
     direction(double X, double Y, double Z) : x(X), y(Y), z(Z) {}
     double x;
     double y;
@@ -16,10 +17,10 @@ struct circle {
     size_t radius;
 };
 
-ostream& operator<< (ostream& os, const direction& dir) {
-    os << "x: " << dir.x  << endl;
-    os << "y: " << dir.y << endl;
-    os << "z: " << dir.z << endl;
+std::ostream& operator<< (std::ostream& os, const direction& dir) {
+    os << "x: " << dir.x << std::endl;
+    os << "y: " << dir.y << std::endl;
+    os << "z: " << dir.z << std::endl;
     return os;
 }
 
@@ -31,7 +32,7 @@ namespace Calibration {
      * @tparam vector<matrix<double>>
      * @param imgs the vector of matrixes of the images of the sphere
      */
-    vector<direction> calibrate(const vector<matrix<double>> &imgs, const Mask::mask &msk) {
+    std::vector<direction> calibrate(const std::vector<matrix<double>> &imgs, const Mask::mask &msk) {
         assert(imgs.size() > 0);
 
 
@@ -42,7 +43,7 @@ namespace Calibration {
 
         circle circ = {xCenter, yCenter, radius};
 
-        vector<direction> directions;
+        std::vector<direction> directions;
         int width = Matrix::columns(imgs[0]);
         int height = Matrix::rows(imgs[0]);
         for (size_t k = 0; k < imgs.size(); k++) {
@@ -76,6 +77,17 @@ namespace Calibration {
             directions.push_back(s);
         }
         return directions;
+    }
+
+    std::vector<direction> load_lights(const std::string& fname) {
+        std::ifstream file(fname);
+        size_t count;
+        file >> count;
+        std::vector<direction> res(count);
+        for (auto& light : res) {
+            file >> light.x >> light.y >> light.z;
+        }
+        return res;
     }
 }
 

@@ -19,18 +19,8 @@ struct PLUMatrix {
 
 };
 
-/**
- * Simplifies the provided matrix,
- * converting it into row echelon form if possible.
- *
- * @pre the matrix is in augmented form
- * @param mx the matrix
- */
 template <typename T>
 PLUMatrix<T> pluFactorization(const matrix<T> &mx);
-
-template <typename T>
-void subtract_rows(row<T>& a, const row<T>& b, double multiplier);
 
 /**
  * Searches for a row with a non-zero value in a particular column,
@@ -70,13 +60,6 @@ PLUMatrix<T> pluFactorization(const matrix<T> &original_matrix) {
     plu.L = Matrix::sum(plu.L, Matrix::identityMatrix<T>((int) plu.L.size()));
     plu.U = mx;
     return plu;
-}
-
-template <typename T>
-void subtract_rows(row<T>& a, const row<T>& b, double multiplier) {
-    for (size_t i = 0; i < a.size(); ++i) {
-        a[i] -= (T)(multiplier * b[i]);
-    }
 }
 
 template<typename T>
