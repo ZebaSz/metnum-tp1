@@ -88,7 +88,61 @@ En este trabajo se realizaron una serie de experimentaciones para poder responde
 
 \paragraph{Luces por calibración VS Luces de la cátedra}
 
+Luego de calibrar el sistema con las imágenes de referencia, decidimos comparar
+las direcciones de luz obtenidas con aquellas provistas por la cátedra. Notamos
+que nuestras direcciones no se coincidían perfectamente con las luces pre-computadas.
+
+Consideramos que esto se debe a irregularidades en el color de la esfera. Si bien la misma
+tiene una superficie lambertiana, el color de la misma no es uniforme, por lo que no
+todos los puntos reflejan la luz de la misma forma. Un sector más oscuro de la esfera
+puede reflejar menos la luz aunque la misma incida de forma directa. Por esto, nuestro proceso
+de calibración podría confundir un punto particular de mayor intensidad con el punto de
+incidencia directa de la luz.
+
+En general, consideramos que nuestras estimaciones de las luces son suficientes.
+Sin embargo, esto no siempre es cierto, ya que hay casos donde la diferencia
+entre nuestras luces calibradas y la referencia de la cátedra difiere significativamente.
+
+Si consideramos cada dirección de luz como vector, la norma de la diferencia
+entre los vectores estimados y los de referencia varía entre 0,075 y 0,35.
+Considerando que los vectores están normalizados, esta última diferencia es muy elevada.
+Sin embargo, se trata de un caso extremo, siendo el promedio (0,14)
+bastante menor, aunque no insignificante.
+
+En particular, hallamos algunos casos en los cuales las luces calibradas coinciden casi
+completamente, si bien la dirección real de la luz no era tan similar. Esto resulta en
+combinaciones de luces que no producen resultados, ya que no satisfacen el
+requerimiento de 3 luces distintas para la reconstrucción del objeto 3D.
+En la siguiente sección se trata con mayor detalle.
+
 \paragraph{Calibración y repercusiones}
+
+El objetivo de la calibración es obtener suficiente información sobre cada punto
+para determinar sus 3 componentes espaciales. Por esto, es necesario tener 3
+fuentes de luz cuyas direcciones sean linealmente independientes.
+
+Como se mencionó antes, existen casos donde las luces calibradas no resultaban
+linealmente independientes (si bien las fuentes de iluminación no eran las mismas).
+El resultado final es que no existe suficiente información sobre cada punto
+para generar un campo normal, y por ende no se pueden estimar las profundidades.
+
+En nuestro caso, las imágenes 3 y 5 (comenzando en 0) resultaron conflictivas,
+ya que ambas tienen un mismo punto brillante que no corresponde con la dirección
+de la luz. Por ende, nuestro proceso de calibración confunde ambas imágenes,
+resultando en un sistema singular.
+
+Por otro lado, si la calibración no es fiel, esto puede introducir ruido en
+la construcción de los cuerpos, ya que la iluminación de cada punto no
+se condice con el ángulo de incidencia de la luz establecido.
+
+En las siguientes imágenes, se puede observar el ruido que introduce la calibración
+imprecisa (izquierda) compara con las direcciones correctas de las luces utilizadas
+(derecha) para casos extremos de imprecisión:
+
+\begin{center}
+\includegraphics[width=.4\linewidth]{imagenes/calib-ruido.png}
+\includegraphics[width=.4\linewidth]{imagenes/luces-limpio.png}
+\end{center}
 
 \paragraph{Elección de las luces}
 \
@@ -99,26 +153,36 @@ Para el caso, se tomaron las imágenes del buda y del gato y se procedió a prob
 
 En las imágenes siguientes, se pueden observar los modelos (en las primeras dos) obtenidos utilizando las mismas luces (1, 2 y 3), mientras que en las segundas dos se muestran las profundidades del gato y del buda respectivamente.
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/gato_small_model_123.png}
 \includegraphics[width=.4\linewidth]{imagenes/buda_small_model_123.png}
+\end{center}
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/gato_small_dephs_123.png}
 \includegraphics[width=.4\linewidth]{imagenes/buda_small_dephs_123.png}
+\end{center}
 
 En esta primera comparación se notó que el modelo y las profundidades del gato tenían una forma mejor detallada que el buda, aunque sólo con esta primera idea no se obtuvo ninguna conclusión, por lo que se continuó con las luces 4, 5 y 6. Sin embargo, al querer utilizar ese conjunto de luces se obtuvieron resultados completamente vacíos. La conclusión a la que se llegó para poder explicar este suceso luego de realizar pruebas fijando una y después dos luces, y cambiando las otras, fue que las luces 3 y 5 son vectores que no son linealmente independientes, ya que dejando fijas esas luces siempre se obtenían modelos vacíos. La razón por la que se concluyó que las luces 3 y 5 no son $L.I.$ fue que al hacer eliminación gausseana, se obtenían filas de $0$s y eso es lo que luego generaría $0$s en las normales estimadas y por lo tanto en todo el modelo.
 
 Después de ese pequeño análisis, se precedió a realizar la generación de modelos 3D con las luces 7, 8 y 9 y los modelos obtenidos fueron los siguientes:
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/gato_small_model_789.png}
 \includegraphics[width=.4\linewidth]{imagenes/buda_small_model_789.png}
+\end{center}
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/gato_small_dephs_789.png}
 \includegraphics[width=.4\linewidth]{imagenes/buda_small_dephs_789.png}
+\end{center}
 
 Tras generar este segundo conjunto de imágenes se notó que ambos modelos tenían fallas muy marcadas ambos en la parte superior izquierda. Por lo tanto, se decidió reconstruir el modelo del mate para poder hacer una comparación más y el resultado obtenido fue el siguiente:
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/mate_small_model_789.png}
 \includegraphics[width=.4\linewidth]{imagenes/mate_small_dephs_789.png}
+\end{center}
 
 Esta reconstrucción permitió concluir que las luces que se utilizaron provenían todas del lado derecho, generando una sombra en la parte izquierda de los objetos y eso permitió explicar por qué en las tres figuras habían partes faltantes en ese lado.
 
@@ -126,13 +190,19 @@ También se probó a utilizar las luces 10, 11 y 12, pero se obtuvo exactamente 
 
 Por último, se probó a utilizar las luces 1, 5 y 11 ya que se observó que para algunos modelos andaba bastante mejor que las combinaciones probadas con anterioridad. Los resultados para el gato, el buda y el mate fueron los siguientes:
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/gato_small_model_1511.png}
 \includegraphics[width=.4\linewidth]{imagenes/buda_small_model_1511.png}
+\end{center}
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/gato_small_dephs_1511.png}
 \includegraphics[width=.4\linewidth]{imagenes/buda_small_dephs_1511.png}
+\end{center}
 
+\begin{center}
 \includegraphics[width=.4\linewidth]{imagenes/mate_small_model_1511.png}
 \includegraphics[width=.4\linewidth]{imagenes/mate_small_dephs_1511.png}
+\end{center}
 
 Se observó entonces con estos resultados que las luces elegidas efectivamente dieron un resultado diferente a los anteriores y además, con una calidad superior, ya que los tres modelos se asemejan bastante a los objetos reales a pesar de tener ciertas deformaciones como se ve en el caso del buda.
