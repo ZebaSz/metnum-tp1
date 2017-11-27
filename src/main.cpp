@@ -2,6 +2,7 @@
 #include <fstream>
 #include "utils.h"
 #include "reconstruct3d.h"
+#include <time.h>
 
 #define SAVE_NORMAL true
 
@@ -97,6 +98,8 @@ args read_args(int argc, char** argv) {
     return res;
 }
 
+
+
 int main(int argc, char** argv) {
     args a = read_args(argc, argv);
     if(!a.valid) {
@@ -146,9 +149,12 @@ int main(int argc, char** argv) {
 #endif
     //----DEPTH
     std::cout << "Estimando las profundidades de la figura " << outputName << std::endl;
+    clock_t time = clock();
     matrix<double> depth = findDepth(normal);
     depth = Mask::restore_clip(depth, msk);
     depth = Mask::apply_mask(depth, msk);
+    time = clock() - time;
+    std::cout << "El tiempo fue de " << (float)time/CLOCKS_PER_SEC << std::endl;
     std::cout << "Guardando las de la figura " << outputName << std::endl;
     Utils::saveMatrixFile(depth, outputName + ".depth.csv");
     //----END
