@@ -45,6 +45,8 @@ iluminación de cada caso, las cuales junto con la secuencia de imágenes de un
 objeto nos proporcionarán la información necesaria para poder calcular todos
 los puntos $(x,y,z)$ del modelo digitalizado y las normales de cada uno.
 
+Para las siguientes secciones, se aplicó una máscara del objeto la cual está compuesta por una parte blanca en donde se encuentra el objeto en las imagenes originales y todo el resto de negro. De esta forma, se puede ubicar fácilmente dónde está el objeto a reconstruir y por lo tanto no generar vectores basura al rededor del mismo. Al mismo tiempo, la máscara permite recortar en un rectángulo más pequeño al objeto para así no tener que recorrer toda la imagen completa. Esto funciona ya que es buscar el pixel blanco que se encuentre más cerca del borde en cada uno de los lados. El algoritmo funciona y a mayor velocidad a causa de este recorte ya que omite gran cantidad de pixeles que se puede asegurar que no aportan información.
+
 \subsubsection{Contrucción del campo normal}
 
 En este paso se desea obtener la normal de cada punto del objeto. Para ello
@@ -70,7 +72,6 @@ Es necesario notar que $M$, la matriz de este sistema, es una matriz esparsa. La
 
 $M$ tiene dimensión $2n \times n$. Esto es porque necesitamos representar 2 ecuaciones por cada pixel, por lo que cada columna de $M$ referirá a $1$ pixel de la imagen y cada fila a una ecuación. Dado que cada pixel utiliza en las ecuaciones a los pixels de la derecha y de abajo, cada columna tendrá a lo sumo 4 elementos (dos por sus propias ecuaciones, una vez por el pixel de su izquierda y otra por el de arriba). Para el caso de los pixels de los bordes derechos e inferiores, solamente tendrán 2 elementos, que se dan por los pixeles que estan en la anteúltima columna y anteúltima fila de la imagen correspondientemente. El último pixel, el que se encuentra en la esquina inferior derecha, no tendrá ningún elemento en su respectiva columna.
 
-
 Nuestra implementación consiste en considerar a esta matriz como un tipo especial de matriz (la esparsa), para la cual no se tiene un arreglo bidimensional como sería el caso habitual sino un vector de hashmap, donde cada elemento del vector representa una columna. Cada hashmap contendrá entonces 4 elementos o menos. Esto permite que al querer multiplicar una columna por otra (como ocurre en el caso de querer calcular $M^tM$) no sea necesario recorrer toda la columna sino únicamente los elementos distintos de 0. Esta optimización es crucial para el desarrollo del algoritmo a nivel temporal. Además, por cuestiones implementativas, se decidió utilizar un diccionario que mapea cada pixel a una columna, para así poder ubicar rápidamente en $z$ (una vez resuelto el sistema) el valor correspondiente a cada pixel.
 
 Luego resta resolver el sistema de la ecuación 15. Para ello aplicamos la factorización de Cholesky, que también resulta optimizada debido a tratarse de una matriz esparsa, ya que para el cálculo de la matriz triangular inferior es necesario recorrer lo calculado en las iteraciones previas, y al utilizar la implementación de matriz esparsa definida anteriormente se logra recorrer la matriz solamente en los elementos distintos de 0.
@@ -95,6 +96,14 @@ El requisito para poder aplicar esta factorización es que la matriz sea simétr
 \begin{center}
 $x^tM^tMx = (Mx)^t(Mx) = ||Mx||^2 > 0$
 \end{center}
+
+Se realizó como prueba la comparación de tiempo y calidad de una imagen de tamaño normal contra la de una imagen de tamaño reducido 6 veces. El tiempo obtenido para la imagen chica fue de 0.146022 segundos, mientras que para la grande fue de 117.572 segundos. Dado que los algoritmos no son lineales, es una diferencia esperable. En cuanto a la calidad de la solución obtenida, se notó que para la imagen chica parecía dar profundidades de mejor calidad. Se muestra en las siguientes imágenes ambos resultados utilizando el gato como ejemplo:
+
+\begin{center}
+\includegraphics[width=.4\linewidth]{imagenes/gato_small_model_1511.png}
+\includegraphics[width=.4\linewidth]{imagenes/gato_model_1511.png}
+\end{center}
+
 
 \subsubsection{Análisis cualitativo}
 
