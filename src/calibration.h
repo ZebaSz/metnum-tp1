@@ -6,6 +6,9 @@
 struct direction {
     direction() = default;
     direction(double X, double Y, double Z) : x(X), y(Y), z(Z) {}
+    operator std::vector<double>() const {
+        return {x,y,z};
+    }
     double x;
     double y;
     double z;
@@ -44,14 +47,14 @@ namespace Calibration {
         circle circ = {xCenter, yCenter, radius};
 
         std::vector<direction> directions;
-        int width = Matrix::columns(imgs[0]);
-        int height = Matrix::rows(imgs[0]);
+        size_t width = Matrix::columns(imgs[0]);
+        size_t height = Matrix::rows(imgs[0]);
         for (size_t k = 0; k < imgs.size(); k++) {
             double x(0);
             double y(0);
             double intensity(0);
-            for (int i = 0; i < height; i++) {
-                for (int j = 0; j < width; j++) {
+            for (size_t i = 0; i < height; i++) {
+                for (size_t j = 0; j < width; j++) {
                     if (imgs[k][i][j] > intensity) {
                         intensity = imgs[k][i][j];
                         x = j;
@@ -60,21 +63,13 @@ namespace Calibration {
                 }
             }
 
-            // 1: image center
             double z = sqrt(pow(circ.radius, 2) - pow(x - circ.xCenter, 2) - pow(y - circ.yCenter, 2));
             x = x - width / 2;
-            y = height / 2 - y;
-            /*
-            // vs circle center
-            x = x - circ.xCenter;
-            y = circ.yCenter - y;
-            double z = sqrt(pow(circ.radius, 2) - pow(x, 2) - pow(y, 2));
-            */
+            y = y - height / 2;
 
             // normalize
             double norm = sqrt(pow(x, 2) + pow(y, 2) + pow(z, 2));
-            direction s(x / norm, y / norm, z / norm);
-            directions.push_back(s);
+            directions.push_back({x / norm, y / norm, z / norm});
         }
         return directions;
     }

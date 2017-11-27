@@ -14,14 +14,6 @@ struct depthSystem {
     row< row< size_t > > Dicc;
 };
 
-matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, const direction &s3) {
-    return {
-            {s1.x, s1.y, s1.z},
-            {s2.x, s2.y, s2.z},
-            {s3.x, s3.y, s3.z}
-    };
-}
-
 /**
  * (5):
  * for each pixel
@@ -42,7 +34,7 @@ matrix<double> sourceOfLightMatrix(const direction &s1, const direction &s2, con
 matrix<row<double>> normalField(const matrix<double> &i1, const matrix<double> &i2, const matrix<double> &i3,
                                 const direction &s1, const direction &s2, const direction &s3) {
     size_t height = i1.size(), width = i1[0].size();
-    PLUMatrix<double> sm = pluFactorization(sourceOfLightMatrix(s1, s2, s3));
+    PLUMatrix<double> sm = pluFactorization(matrix<double>{s1, s2, s3});
     matrix<row<double>> normal;
 
     for (size_t i = 0; i < height; i++) {
