@@ -3,6 +3,7 @@
 #include "utils.h"
 #include "reconstruct3d.h"
 
+#define SAVE_LIGHTS true
 #define SAVE_NORMAL true
 
 #define IMG_0 0
@@ -122,6 +123,10 @@ int main(int argc, char** argv) {
         }
         std::cout << "Calibrando en base a la figura de referencia" << std::endl;
         calibrations = Calibration::calibrate(references, referenceMask);
+#if SAVE_LIGHTS
+        std::cout << "Guardando las luces calculadas" << std::endl;
+        Utils::saveMatrixFile({calibrations.begin(), calibrations.end()}, "lights.csv");
+#endif
     }
     //----LOADING
     std::string figureName(a.fig_fname);
